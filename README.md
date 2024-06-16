@@ -32,8 +32,7 @@ data class UserInfo(
 ### 获取Api
 
 ```kotlin
-// 简化的写法，表示获取默认分组下类型为 UserInfo 的默认文件Api
-val userInfoDefaultApi = FDatastore.defaultGroupApi(UserInfo::class.java)
+val userInfoDatastoreApi: DatastoreApi<UserInfo> = FDatastore.api(UserInfo::class.java)
 ```
 
 ### 使用Api
@@ -68,43 +67,4 @@ lifecycleScope.launch {
 api.getBlocking()
 api.replaceBlocking { null }
 api.updateBlocking { it.copy(age = 200) }
-```
-
-# 详细
-
-### 数据存储位置
-
-`/data/data/包名/files/f_datastore/分组/类型/文件`
-
-* `分组`
-
-  路径中的`分组`字符串为分组名称`MD5`之后的字符串，默认分组为：`com.sd.lib.datastore.group.default`
-
-* `类型`
-
-  路径中的`类型`字符串为`DatastoreType`注解的`id`值`MD5`之后的字符串，默认`id`为空，库内部会使用被标注类的全类名作为`id`
-
-* `文件`
-
-  路径中的`文件`字符串为`TypedDatastore.api(filename)`传入的参数`Base64`之后的字符串，如果调用的是无参数的重载函数，则默认值为`default`，最终数据存放在该文件中
-
-### 获取Api的完整写法
-
-```kotlin
-// 获取默认分组
-val group: DatastoreGroup = FDatastore.defaultGroup()
-
-// 获取 UserInfo 类型的存储
-val typedDatastore: TypedDatastore<UserInfo> = group.type(UserInfo::class.java)
-
-// UserInfo 类型的默认文件Api
-val defaultApi: DatastoreApi<UserInfo> = typedDatastore.api()
-
-// UserInfo 类型的指定文件Api
-val fileApi: DatastoreApi<UserInfo> = typedDatastore.api(file = "hello")
-```
-
-```kotlin
-// 简化的写法，表示获取默认分组下类型为 UserInfo 的默认文件Api，相当于上面代码中的 defaultApi
-val userInfoDefaultApi = FDatastore.defaultGroupApi(UserInfo::class.java)
 ```
