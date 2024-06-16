@@ -2,6 +2,7 @@ package com.sd.demo.datastore
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
+import com.sd.demo.datastore.model.version1.UserInfo
 import com.sd.lib.datastore.FDatastore
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -12,16 +13,14 @@ import org.junit.runner.RunWith
 class DatastoreTest {
     @Test
     fun testGetDatastoreApi() {
-        val api1 = FDatastore.defaultGroupApi(UserInfo::class.java)
-        val api2 = FDatastore.defaultGroup().type(UserInfo::class.java).api()
-        val api3 = FDatastore.defaultGroup().type(UserInfo::class.java).api("user_info")
+        val api1 = FDatastore.api(UserInfo::class.java)
+        val api2 = FDatastore.api(UserInfo::class.java)
         assertEquals(true, api1 === api2)
-        assertEquals(false, api1 === api3)
     }
 
     @Test
     fun testGetSetRemove(): Unit = runBlocking {
-        val api = FDatastore.defaultGroupApi(UserInfo::class.java)
+        val api = FDatastore.api(UserInfo::class.java)
 
         api.replace { null }
         assertEquals(null, api.get())
@@ -40,7 +39,7 @@ class DatastoreTest {
 
     @Test
     fun testUpdate(): Unit = runBlocking {
-        val api = FDatastore.defaultGroupApi(UserInfo::class.java)
+        val api = FDatastore.api(UserInfo::class.java)
 
         api.replace { null }
         assertEquals(null, api.get())
@@ -57,7 +56,7 @@ class DatastoreTest {
 
     @Test
     fun testDataFlow(): Unit = runBlocking {
-        val api = FDatastore.defaultGroupApi(UserInfo::class.java)
+        val api = FDatastore.api(UserInfo::class.java)
 
         api.replace { null }
         assertEquals(null, api.get())

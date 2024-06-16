@@ -1,6 +1,7 @@
 package com.sd.demo.datastore
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.sd.demo.datastore.model.version1.UserInfo
 import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.getBlocking
 import com.sd.lib.datastore.replaceBlocking
@@ -13,7 +14,7 @@ import org.junit.runner.RunWith
 class DatastoreBlockingTest {
     @Test
     fun testGetSetRemove() {
-        val api = FDatastore.defaultGroupApi(UserInfo::class.java)
+        val api = FDatastore.api(UserInfo::class.java)
 
         api.replaceBlocking { null }
         assertEquals(null, api.getBlocking())
@@ -32,7 +33,7 @@ class DatastoreBlockingTest {
 
     @Test
     fun testUpdate() {
-        val api = FDatastore.defaultGroupApi(UserInfo::class.java)
+        val api = FDatastore.api(UserInfo::class.java)
 
         api.replaceBlocking { null }
         assertEquals(null, api.getBlocking())

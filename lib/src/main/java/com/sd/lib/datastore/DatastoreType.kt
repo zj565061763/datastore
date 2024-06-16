@@ -4,4 +4,5 @@ package com.sd.lib.datastore
 @Target(AnnotationTarget.CLASS)
 annotation class DatastoreType(
     val id: String = "",
+    val legacyIds: Array<String> = [],
 )

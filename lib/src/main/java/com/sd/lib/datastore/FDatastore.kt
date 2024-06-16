@@ -5,13 +5,21 @@ import android.content.Context
 
 @SuppressLint("StaticFieldLeak")
 object FDatastore {
-    private const val DEFAULT_GROUP = "com.sd.lib.datastore.group.default"
-
     private var _context: Context? = null
     private lateinit var _onError: (Throwable) -> Unit
 
+    /** 保存文件夹 */
+    private val _directory by lazy {
+        context.filesDir.resolve("f_datastore")
+    }
+
     /** DefaultGroup */
-    private val _defaultGroup by lazy { newGroup(DEFAULT_GROUP) }
+    private val _defaultGroup by lazy {
+        DatastoreGroup(
+            directory = _directory.resolve("sd.lib.datastore.group.default"),
+            onError = _onError,
+        )
+    }
 
     private val context: Context
         get() = _context ?: synchronized(this@FDatastore) {
@@ -38,27 +46,10 @@ object FDatastore {
     }
 
     /**
-     * 默认分组
+     * 获取[clazz]的Api
      */
     @JvmStatic
-    fun defaultGroup(): DatastoreGroup = _defaultGroup
-
-    /**
-     * 默认分组下[clazz]对应的默认api
-     */
-    @JvmStatic
-    fun <T> defaultGroupApi(clazz: Class<T>): DatastoreApi<T> {
-        return defaultGroup().type(clazz).api()
-    }
-
-    private fun newGroup(group: String): DatastoreGroup {
-        require(group.isNotEmpty()) { "group is empty" }
-        val directory = context.filesDir
-            .resolve("f_datastore")
-            .resolve(fMd5(group))
-        return DatastoreGroup(
-            directory = directory,
-            onError = _onError,
-        )
+    fun <T> api(clazz: Class<T>): DatastoreApi<T> {
+        return _defaultGroup.type(clazz)
     }
 }

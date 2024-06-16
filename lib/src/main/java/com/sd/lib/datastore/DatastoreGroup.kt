@@ -3,8 +3,7 @@ package com.sd.lib.datastore
 import java.io.File
 
 interface DatastoreGroup {
-    fun <T> type(clazz: Class<T>): TypedDatastore<T>
-    fun removeType(id: String)
+    fun <T> type(clazz: Class<T>): DatastoreApi<T>
 }
 
 internal fun DatastoreGroup(
@@ -22,32 +21,47 @@ private class DatastoreGroupImpl(
     private val onError: (Throwable) -> Unit,
 ) : DatastoreGroup {
 
-    private val _holder: MutableMap<String, TypedDatastore<*>> = mutableMapOf()
+    private val _holder: MutableMap<String, ApiInfo<*>> = mutableMapOf()
 
-    override fun <T> type(clazz: Class<T>): TypedDatastore<T> {
+    override fun <T> type(clazz: Class<T>): DatastoreApi<T> {
         val datastoreType = clazz.getAnnotation(DatastoreType::class.java)
             ?: error("Annotation DatastoreType was not found in $clazz")
 
         val id = datastoreType.id.ifEmpty { clazz.name }
 
         synchronized(this@DatastoreGroupImpl) {
-            @Suppress("UNCHECKED_CAST")
-            return _holder.getOrPut(id) {
-                TypedDatastore(
-                    directory = directoryOfID(id),
-                    clazz = clazz,
-                    onError = onError,
-                )
-            } as TypedDatastore<T>
+            _holder[id]?.let { info ->
+                if (info.clazz != clazz) error("id:${id} has bound to ${info.clazz}")
+                @Suppress("UNCHECKED_CAST")
+                return info.api as DatastoreApi<T>
+            }
+            return newDatastoreApi(
+                file = directoryOfID(id).resolve("default"),
+                clazz = clazz,
+            ).also { api ->
+                _holder[id] = ApiInfo(api, clazz)
+            }
         }
     }
 
-    override fun removeType(id: String) {
-        synchronized(this@DatastoreGroupImpl) {
-            if (_holder.containsKey(id)) error("Can not remove active type:$id")
-            directoryOfID(id).deleteRecursively()
-        }
+    private fun <T> newDatastoreApi(
+        file: File,
+        clazz: Class<T>,
+    ): DatastoreApi<T> {
+        return DatastoreApi(
+            file = file,
+            clazz = clazz,
+            onError = onError,
+        )
     }
 
-    private fun directoryOfID(id: String): File = directory.resolve(fMd5(id))
+    private fun directoryOfID(id: String): File {
+        require(id.isNotEmpty()) { "id is empty" }
+        return directory.resolve(fMd5(id))
+    }
+
+    private data class ApiInfo<T>(
+        val api: DatastoreApi<T>,
+        val clazz: Class<T>,
+    )
 }

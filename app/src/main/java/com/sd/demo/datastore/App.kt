@@ -19,7 +19,7 @@ class App : Application() {
     }
 }
 
-val userInfoDatastoreApi = FDatastore.defaultGroupApi(UserInfo::class.java)
+val userInfoDatastoreApi = FDatastore.api(UserInfo::class.java)
     .apply {
         replaceBlocking {
             it ?: UserInfo(age = 0)
