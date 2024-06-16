@@ -2,7 +2,9 @@ package com.sd.demo.datastore
 
 import android.app.Application
 import android.util.Log
+import com.sd.demo.datastore.model.version1.UserInfo
 import com.sd.lib.datastore.FDatastore
+import com.sd.lib.datastore.replaceBlocking
 
 class App : Application() {
     override fun onCreate() {
@@ -16,3 +18,10 @@ class App : Application() {
         )
     }
 }
+
+val userInfoDatastoreApi = FDatastore.defaultGroupApi(UserInfo::class.java)
+    .apply {
+        replaceBlocking {
+            it ?: UserInfo(age = 0)
+        }
+    }
