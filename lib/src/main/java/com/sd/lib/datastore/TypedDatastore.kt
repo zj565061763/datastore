@@ -4,14 +4,14 @@ import java.io.File
 
 interface TypedDatastore<T> {
     /**
-     * 获取默认key对应的api，默认key为全类名
+     * 获取默认文件对应的Api
      */
     fun api(): DatastoreApi<T>
 
     /**
-     * 获取[key]对应的api
+     * 获取[filename]文件对应的api
      */
-    fun api(key: String): DatastoreApi<T>
+    fun api(filename: String): DatastoreApi<T>
 }
 
 internal fun <T> TypedDatastore(
@@ -38,12 +38,12 @@ private class TypedDatastoreImpl<T>(
         return api(clazz.name)
     }
 
-    override fun api(key: String): DatastoreApi<T> {
-        require(key.isNotEmpty()) { "key is empty" }
+    override fun api(filename: String): DatastoreApi<T> {
+        require(filename.isNotEmpty()) { "filename is empty" }
         synchronized(this@TypedDatastoreImpl) {
-            return _holder.getOrPut(key) {
+            return _holder.getOrPut(filename) {
                 DatastoreApi(
-                    file = directory.resolve(fMd5(key)),
+                    file = directory.resolve(fMd5(filename)),
                     clazz = clazz,
                     onError = onError,
                 )
