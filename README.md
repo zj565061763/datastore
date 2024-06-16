@@ -74,10 +74,15 @@ api.updateBlocking { it.copy(age = 200) }
 
 `/data/data/包名/files/f_datastore/分组/类型/文件`
 
-* 分组
+* `分组`
+
   路径中的`分组`字符串为分组名称`MD5`之后的字符串，默认分组为：`com.sd.lib.datastore.group.default`
-* 类型
+
+* `类型`
+
   路径中的`类型`字符串为`DatastoreType`注解的`id`值`MD5`之后的字符串，默认`id`为空，库内部会使用被标注类的全类名作为`id`
-* 文件
+
+* `文件`
+
   路径中的`文件`字符串为`TypedDatastore.api(file)`传入的参数`MD5`之后的字符串，如果调用的是无参数的重载函数，则默认值为被标注类的全类名
   
