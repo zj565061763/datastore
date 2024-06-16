@@ -84,5 +84,5 @@ api.updateBlocking { it.copy(age = 200) }
 
 * `文件`
 
-  路径中的`文件`字符串为`TypedDatastore.api(file)`传入的参数`MD5`之后的字符串，如果调用的是无参数的重载函数，则默认值为被标注类的全类名
+  路径中的`文件`字符串为`TypedDatastore.api(file)`传入的参数`MD5`之后的字符串，如果调用的是无参数的重载函数，则默认值为被标注类的全类名，最终数据存放在该文件中
   
