@@ -9,9 +9,9 @@ interface TypedDatastore<T> {
     fun api(): DatastoreApi<T>
 
     /**
-     * 获取[filename]文件对应的api
+     * 获取[file]文件对应的api
      */
-    fun api(filename: String): DatastoreApi<T>
+    fun api(file: String): DatastoreApi<T>
 }
 
 internal fun <T> TypedDatastore(
@@ -38,12 +38,12 @@ private class TypedDatastoreImpl<T>(
         return api(clazz.name)
     }
 
-    override fun api(filename: String): DatastoreApi<T> {
-        require(filename.isNotEmpty()) { "filename is empty" }
+    override fun api(file: String): DatastoreApi<T> {
+        require(file.isNotEmpty()) { "file is empty" }
         synchronized(this@TypedDatastoreImpl) {
-            return _holder.getOrPut(filename) {
+            return _holder.getOrPut(file) {
                 DatastoreApi(
-                    file = directory.resolve(fMd5(filename)),
+                    file = directory.resolve(fMd5(file)),
                     clazz = clazz,
                     onError = onError,
                 )
