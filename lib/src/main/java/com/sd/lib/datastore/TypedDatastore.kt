@@ -42,7 +42,7 @@ private class TypedDatastoreImpl<T>(
     private var _hasLoadApis = false
 
     override fun api(): DatastoreApi<T> {
-        return api(clazz.name)
+        return api("default")
     }
 
     override fun api(filename: String): DatastoreApi<T> {
