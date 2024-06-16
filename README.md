@@ -2,7 +2,7 @@
 
 # About
 
-基于`androidx.datastore`封装的对象数据存储库，采用json的格式保存数据。
+基于[datastore](https://developer.android.com/topic/libraries/architecture/datastore)封装的对象存储库，使用json格式保存数据。
 
 # 使用
 
