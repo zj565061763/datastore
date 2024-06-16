@@ -70,7 +70,9 @@ api.replaceBlocking { null }
 api.updateBlocking { it.copy(age = 200) }
 ```
 
-# 数据存储位置
+# 详细
+
+### 数据存储位置
 
 `/data/data/包名/files/f_datastore/分组/类型/文件`
 
