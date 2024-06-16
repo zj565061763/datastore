@@ -50,6 +50,6 @@ object FDatastore {
      */
     @JvmStatic
     fun <T> api(clazz: Class<T>): DatastoreApi<T> {
-        return _defaultGroup.type(clazz)
+        return _defaultGroup.api(clazz)
     }
 }

@@ -2,8 +2,8 @@ package com.sd.lib.datastore
 
 import java.io.File
 
-interface DatastoreGroup {
-    fun <T> type(clazz: Class<T>): DatastoreApi<T>
+internal interface DatastoreGroup {
+    fun <T> api(clazz: Class<T>): DatastoreApi<T>
 }
 
 internal fun DatastoreGroup(
@@ -23,7 +23,7 @@ private class DatastoreGroupImpl(
 
     private val _holder: MutableMap<String, ApiInfo<*>> = mutableMapOf()
 
-    override fun <T> type(clazz: Class<T>): DatastoreApi<T> {
+    override fun <T> api(clazz: Class<T>): DatastoreApi<T> {
         val datastoreType = clazz.getAnnotation(DatastoreType::class.java)
             ?: error("Annotation DatastoreType was not found in $clazz")
 
