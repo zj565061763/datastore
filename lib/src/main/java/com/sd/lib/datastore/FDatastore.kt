@@ -10,13 +10,13 @@ object FDatastore {
 
     /** 保存文件夹 */
     private val _directory by lazy {
-        context.filesDir.resolve("f_datastore")
+        context.filesDir.resolve("sd.lib.datastore")
     }
 
     /** DefaultGroup */
     private val _defaultGroup by lazy {
         DatastoreGroup(
-            directory = _directory.resolve("sd.lib.datastore.group.default"),
+            directory = _directory.resolve("default"),
             onError = _onError,
         )
     }
