@@ -95,48 +95,4 @@ private class DatastoreApiImpl<T>(
             else -> throw error
         }
     }
-
-    /*private fun <T> checkLegacyIds(
-        clazz: Class<T>,
-        type: DatastoreType,
-        id: String,
-    ) {
-        val legacyIds = type.legacyIds
-        if (legacyIds.isEmpty()) return
-
-        val ids = legacyIds.asSequence()
-            .map {
-                it.also {
-                    if (it.isEmpty()) error("legacy id is empty")
-                    if (it == id) error("legacy id equals current id:$id")
-                }
-            }
-            .filter { !_holder.containsKey(it) }
-            .distinct()
-            .toMutableList()
-
-        if (ids.isEmpty()) {
-            return
-        }
-
-        val currentDirectory = directoryOfID(id)
-        if (!currentDirectory.exists()) {
-            // 当前id关联的目录已存在
-            return
-        }
-
-        if (!currentDirectory.mkdirs()) {
-            // 创建目录失败
-            return
-        }
-
-        val lastTypedDatastore = newTypedDatastore(
-            directory = directoryOfID(ids.last()),
-            clazz = clazz,
-        )
-
-        ids.forEach {
-            directoryOfID(it).deleteRecursively()
-        }
-    }*/
 }
