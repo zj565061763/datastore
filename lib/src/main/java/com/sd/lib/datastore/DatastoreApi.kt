@@ -21,12 +21,12 @@ interface DatastoreApi<T> {
     /**
      * 替换数据
      */
-    suspend fun replace(transform: suspend (T?) -> T?)
+    suspend fun replace(transform: suspend (T?) -> T?): T?
 
     /**
      * 更新数据
      */
-    suspend fun update(transform: suspend (T) -> T)
+    suspend fun update(transform: suspend (T) -> T): T?
 }
 
 internal fun <T> DatastoreApi(
@@ -61,12 +61,12 @@ private class DatastoreApiImpl<T>(
         return dataFlow.firstOrNull()
     }
 
-    override suspend fun replace(transform: suspend (T?) -> T?) {
-        updateData(transform)
+    override suspend fun replace(transform: suspend (T?) -> T?): T? {
+        return updateData(transform)
     }
 
-    override suspend fun update(transform: suspend (T) -> T) {
-        updateData { data ->
+    override suspend fun update(transform: suspend (T) -> T): T? {
+        return updateData { data ->
             if (data == null) {
                 null
             } else {
