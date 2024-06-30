@@ -35,24 +35,14 @@ private class DatastoreGroupImpl(
                 @Suppress("UNCHECKED_CAST")
                 return info.api as DatastoreApi<T>
             }
-            return newDatastoreApi(
+            return DatastoreApi(
                 file = directoryOfID(id).resolve("default"),
                 clazz = clazz,
+                onError = onError,
             ).also { api ->
                 _holder[id] = ApiInfo(api, clazz)
             }
         }
-    }
-
-    private fun <T> newDatastoreApi(
-        file: File,
-        clazz: Class<T>,
-    ): DatastoreApi<T> {
-        return DatastoreApi(
-            file = file,
-            clazz = clazz,
-            onError = onError,
-        )
     }
 
     private fun directoryOfID(id: String): File {
