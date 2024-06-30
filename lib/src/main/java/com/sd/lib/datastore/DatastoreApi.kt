@@ -75,18 +75,19 @@ private class DatastoreApiImpl<T>(
         }
     }
 
-    private suspend fun updateData(transform: suspend (T?) -> T?) {
-        updateModel { model ->
+    private suspend fun updateData(transform: suspend (T?) -> T?): T? {
+        return updateModel { model ->
             val newData = transform(model.data)
             model.copy(data = newData)
-        }
+        }?.data
     }
 
-    private suspend fun updateModel(transform: suspend (Model<T>) -> Model<T>) {
-        try {
+    private suspend fun updateModel(transform: suspend (Model<T>) -> Model<T>): Model<T>? {
+        return try {
             _datastore.updateData(transform)
         } catch (e: Throwable) {
             notifyError(e)
+            null
         }
     }
 
