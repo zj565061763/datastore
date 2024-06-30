@@ -22,7 +22,7 @@ object FDatastore {
     }
 
     private val context: Context
-        get() = _context ?: synchronized(this@FDatastore) {
+        get() = _context ?: synchronized(FDatastore) {
             checkNotNull(_context) { "FDatastore.init() should be called before this." }
         }
 
@@ -35,7 +35,7 @@ object FDatastore {
         context: Context,
         onError: (Throwable) -> Unit = { it.printStackTrace() },
     ) {
-        synchronized(this@FDatastore) {
+        synchronized(FDatastore) {
             if (_context == null) {
                 _context = context.applicationContext
                 _onError = onError
