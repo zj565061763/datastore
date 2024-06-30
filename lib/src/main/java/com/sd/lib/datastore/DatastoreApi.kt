@@ -52,9 +52,10 @@ private class DatastoreApiImpl<T>(
         produceFile = { file }
     )
 
-    override val dataFlow: Flow<T?> = _datastore.data
-        .catch { notifyError(it) }
-        .map { it.data }
+    override val dataFlow: Flow<T?>
+        get() = _datastore.data
+            .catch { notifyError(it) }
+            .map { it.data }
 
     override suspend fun get(): T? {
         return dataFlow.firstOrNull()
