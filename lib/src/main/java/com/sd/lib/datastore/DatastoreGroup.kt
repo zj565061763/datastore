@@ -25,7 +25,7 @@ private class DatastoreGroupImpl(
 
     override fun <T> api(clazz: Class<T>): DatastoreApi<T> {
         val datastoreType = clazz.getAnnotation(DatastoreType::class.java)
-            ?: error("Annotation DatastoreType was not found in $clazz")
+            ?: error("Annotation DatastoreType was not found in ${clazz.name}")
 
         val id = datastoreType.id.ifEmpty { clazz.name }
 
