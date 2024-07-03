@@ -1,4 +1,4 @@
-package com.sd.demo.datastore.model.version1
+package com.sd.demo.datastore.model
 
 import com.sd.lib.datastore.DatastoreType
 

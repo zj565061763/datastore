@@ -20,14 +20,14 @@ FDatastore.init(
 ### 数据对象
 
 ```kotlin
-@DatastoreType(id = "")
+@DatastoreType(id = "UserInfo")
 data class UserInfo(
     val age: Int,
 )
 ```
 
 * 数据对象必须是不可变的，例如使用`data class`并用`val`定义属性
-* 使用`DatastoreType`注解标注类，注解中的`id`默认为空，为空的时候库内部会使用被标注类的全类名作为`id`
+* 使用`DatastoreType`注解标注类，注解中的`id`必须全局唯一
 
 ### 获取Api
 

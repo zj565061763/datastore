@@ -24,10 +24,13 @@ private class DatastoreGroupImpl(
     private val _holder: MutableMap<String, ApiInfo<*>> = mutableMapOf()
 
     override fun <T> api(clazz: Class<T>): DatastoreApi<T> {
-        val datastoreType = clazz.getAnnotation(DatastoreType::class.java)
-            ?: error("Annotation ${DatastoreType::class.java.simpleName} was not found in ${clazz.name}")
+        val datastoreType = requireNotNull(clazz.getAnnotation(DatastoreType::class.java)) {
+            "Annotation ${DatastoreType::class.java.simpleName} was not found in ${clazz.name}"
+        }
 
-        val id = datastoreType.id.ifEmpty { clazz.name }
+        val id = datastoreType.id.ifEmpty {
+            throw IllegalArgumentException("DatastoreType.id is empty")
+        }
 
         synchronized(this@DatastoreGroupImpl) {
             _holder[id]?.let { info ->
