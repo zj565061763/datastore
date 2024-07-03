@@ -34,13 +34,14 @@ object FDatastore {
     fun init(
         context: Context,
         onError: (Throwable) -> Unit = { it.printStackTrace() },
-    ) {
+    ): Boolean {
         synchronized(FDatastore) {
-            if (_context == null) {
+            return if (_context == null) {
                 _context = context.applicationContext
                 _onError = onError
+                true
             } else {
-                error("Initialized.")
+                false
             }
         }
     }
