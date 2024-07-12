@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import com.sd.demo.datastore.model.UserInfo
 import com.sd.lib.datastore.FDatastore
-import com.sd.lib.datastore.replaceBlocking
+import com.sd.lib.datastore.initIfNullBlocking
 
 class App : Application() {
     override fun onCreate() {
@@ -21,7 +21,5 @@ class App : Application() {
 
 val userInfoDatastoreApi = FDatastore.api(UserInfo::class.java)
     .apply {
-        replaceBlocking {
-            it ?: UserInfo(age = 0)
-        }
+        initIfNullBlocking { UserInfo(age = 0) }
     }

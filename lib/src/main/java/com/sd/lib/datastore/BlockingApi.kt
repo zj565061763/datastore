@@ -12,10 +12,19 @@ fun <T> DatastoreApi<T>.getBlocking(): T? {
 }
 
 /**
+ * [DatastoreApi.initIfNull]
+ */
+fun <T> DatastoreApi<T>.initIfNullBlocking(transform: suspend () -> T): T? {
+    return runBlocking {
+        initIfNull(transform)
+    }
+}
+
+/**
  * [DatastoreApi.replace]
  */
-fun <T> DatastoreApi<T>.replaceBlocking(transform: suspend (T?) -> T?) {
-    runBlocking {
+fun <T> DatastoreApi<T>.replaceBlocking(transform: suspend (T?) -> T?): T? {
+    return runBlocking {
         replace(transform)
     }
 }
@@ -23,8 +32,8 @@ fun <T> DatastoreApi<T>.replaceBlocking(transform: suspend (T?) -> T?) {
 /**
  * [DatastoreApi.update]
  */
-fun <T> DatastoreApi<T>.updateBlocking(transform: suspend (T) -> T) {
-    runBlocking {
+fun <T> DatastoreApi<T>.updateBlocking(transform: suspend (T) -> T): T? {
+    return runBlocking {
         update(transform)
     }
 }
