@@ -1,7 +1,6 @@
 package com.sd.demo.datastore
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.sd.demo.datastore.model.UserInfo
 import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.getBlocking
 import com.sd.lib.datastore.replaceBlocking

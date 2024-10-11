@@ -11,15 +11,6 @@ class DatastoreJavaApi<T>(
    }
 
    /**
-    * [DatastoreApi.initIfNull]
-    */
-   fun initIfNull(transform: () -> T): T? {
-      return api.initIfNullBlocking {
-         transform()
-      }
-   }
-
-   /**
     * [DatastoreApi.replace]
     */
    fun replace(transform: (T?) -> T?): T? {

@@ -2,7 +2,6 @@ package com.sd.demo.datastore
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
-import com.sd.demo.datastore.model.UserInfo
 import com.sd.lib.datastore.FDatastore
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

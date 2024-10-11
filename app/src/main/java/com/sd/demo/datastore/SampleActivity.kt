@@ -9,12 +9,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.sd.demo.datastore.theme.AppTheme
+import com.sd.lib.datastore.updateBlocking
 import kotlinx.coroutines.launch
 
 class SampleActivity : ComponentActivity() {
@@ -27,7 +27,7 @@ class SampleActivity : ComponentActivity() {
       }
 
       lifecycleScope.launch {
-         userInfoDatastoreApi.dataFlow.collect {
+         userInfoApi.dataFlow.collect {
             logMsg { "dataFlow:$it" }
          }
       }
@@ -38,28 +38,23 @@ class SampleActivity : ComponentActivity() {
 private fun ContentView(
    modifier: Modifier = Modifier,
 ) {
-   val user by userInfoDatastoreApi.dataFlow.collectAsStateWithLifecycle(initialValue = null)
-   val scope = rememberCoroutineScope()
+   val user by userInfoApi.dataFlow.collectAsStateWithLifecycle(initialValue = null)
 
    Column(
       modifier = modifier.fillMaxSize(),
       horizontalAlignment = Alignment.CenterHorizontally,
    ) {
       Button(onClick = {
-         scope.launch {
-            userInfoDatastoreApi.update {
-               it.copy(age = it.age + 1)
-            }
+         userInfoApi.updateBlocking {
+            it.copy(age = it.age + 1)
          }
       }) {
          Text(text = "+")
       }
 
       Button(onClick = {
-         scope.launch {
-            userInfoDatastoreApi.update {
-               it.copy(age = it.age - 1)
-            }
+         userInfoApi.updateBlocking {
+            it.copy(age = it.age - 1)
          }
       }) {
          Text(text = "-")

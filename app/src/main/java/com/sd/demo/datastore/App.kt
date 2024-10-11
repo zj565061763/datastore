@@ -2,9 +2,8 @@ package com.sd.demo.datastore
 
 import android.app.Application
 import android.util.Log
-import com.sd.demo.datastore.model.UserInfo
 import com.sd.lib.datastore.FDatastore
-import com.sd.lib.datastore.initIfNullBlocking
+import com.sd.lib.datastore.replaceBlocking
 
 class App : Application() {
    override fun onCreate() {
@@ -16,10 +15,10 @@ class App : Application() {
             logMsg { Log.getStackTraceString(it) }
          }
       )
+
+      // 如果值为null，则设置一个默认值
+      userInfoApi.replaceBlocking {
+         it ?: UserInfo()
+      }
    }
 }
-
-val userInfoDatastoreApi = FDatastore.api(UserInfo::class.java)
-   .apply {
-      initIfNullBlocking { UserInfo(age = 0) }
-   }
