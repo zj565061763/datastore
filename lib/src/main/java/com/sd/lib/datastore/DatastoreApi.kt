@@ -2,6 +2,7 @@ package com.sd.lib.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.MultiProcessDataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
@@ -46,10 +47,11 @@ private class DatastoreApiImpl<T>(
    clazz: Class<T>,
    private val onError: (Throwable) -> Unit,
 ) : DatastoreApi<T> {
-
+   private val _serializer = ModelSerializer(clazz)
    private val _datastore: DataStore<Model<T>> = MultiProcessDataStoreFactory.create(
-      serializer = ModelSerializer(clazz),
-      produceFile = { file }
+      serializer = _serializer,
+      corruptionHandler = ReplaceFileCorruptionHandler { _serializer.defaultValue },
+      produceFile = { file },
    )
 
    override val dataFlow: Flow<T?>

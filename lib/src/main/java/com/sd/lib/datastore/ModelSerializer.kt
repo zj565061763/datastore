@@ -27,7 +27,7 @@ internal class ModelSerializer<T>(
       val bytes = input.readBytes()
       if (bytes.isEmpty()) return defaultValue
       val json = bytes.decodeToString()
-      return checkNotNull(_jsonAdapter.fromJson(json))
+      return _jsonAdapter.fromJson(json)!!
    }
 }
 
