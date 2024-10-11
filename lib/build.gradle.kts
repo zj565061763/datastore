@@ -44,7 +44,6 @@ publishing {
             groupId = libGroupId
             artifactId = libArtifactId
             version = libVersion
-
             afterEvaluate {
                 from(components["release"])
             }
