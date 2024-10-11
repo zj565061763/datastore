@@ -1,5 +1,7 @@
 package com.sd.lib.datastore
 
+import kotlinx.coroutines.runBlocking
+
 class DatastoreJavaApi<T>(
    private val api: DatastoreApi<T>,
 ) {
@@ -7,15 +9,15 @@ class DatastoreJavaApi<T>(
     * [DatastoreApi.get]
     */
    fun get(): T? {
-      return api.getBlocking()
+      return runBlocking { api.get() }
    }
 
    /**
     * [DatastoreApi.replace]
     */
    fun replace(transform: (T?) -> T?): T? {
-      return api.replaceBlocking {
-         transform(it)
+      return runBlocking {
+         api.replace { transform(it) }
       }
    }
 
@@ -23,8 +25,8 @@ class DatastoreJavaApi<T>(
     * [DatastoreApi.update]
     */
    fun update(transform: (T) -> T): T? {
-      return api.updateBlocking {
-         transform(it)
+      return runBlocking {
+         api.update { transform(it) }
       }
    }
 }
