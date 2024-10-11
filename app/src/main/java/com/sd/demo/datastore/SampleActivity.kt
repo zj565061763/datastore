@@ -18,53 +18,53 @@ import com.sd.demo.datastore.theme.AppTheme
 import kotlinx.coroutines.launch
 
 class SampleActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                ContentView()
-            }
-        }
+   override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      setContent {
+         AppTheme {
+            ContentView()
+         }
+      }
 
-        lifecycleScope.launch {
-            userInfoDatastoreApi.dataFlow.collect {
-                logMsg { "dataFlow:$it" }
-            }
-        }
-    }
+      lifecycleScope.launch {
+         userInfoDatastoreApi.dataFlow.collect {
+            logMsg { "dataFlow:$it" }
+         }
+      }
+   }
 }
 
 @Composable
 private fun ContentView(
-    modifier: Modifier = Modifier,
+   modifier: Modifier = Modifier,
 ) {
-    val user by userInfoDatastoreApi.dataFlow.collectAsStateWithLifecycle(initialValue = null)
-    val scope = rememberCoroutineScope()
+   val user by userInfoDatastoreApi.dataFlow.collectAsStateWithLifecycle(initialValue = null)
+   val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Button(onClick = {
-            scope.launch {
-                userInfoDatastoreApi.update {
-                    it.copy(age = it.age + 1)
-                }
+   Column(
+      modifier = modifier.fillMaxSize(),
+      horizontalAlignment = Alignment.CenterHorizontally,
+   ) {
+      Button(onClick = {
+         scope.launch {
+            userInfoDatastoreApi.update {
+               it.copy(age = it.age + 1)
             }
-        }) {
-            Text(text = "+")
-        }
+         }
+      }) {
+         Text(text = "+")
+      }
 
-        Button(onClick = {
-            scope.launch {
-                userInfoDatastoreApi.update {
-                    it.copy(age = it.age - 1)
-                }
+      Button(onClick = {
+         scope.launch {
+            userInfoDatastoreApi.update {
+               it.copy(age = it.age - 1)
             }
-        }) {
-            Text(text = "-")
-        }
+         }
+      }) {
+         Text(text = "-")
+      }
 
-        Text(text = user?.age.toString())
-    }
+      Text(text = user?.age.toString())
+   }
 }

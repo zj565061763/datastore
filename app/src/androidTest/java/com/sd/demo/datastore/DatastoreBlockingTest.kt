@@ -12,39 +12,39 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class DatastoreBlockingTest {
-    @Test
-    fun testGetSetRemove() {
-        val api = FDatastore.api(UserInfo::class.java)
+   @Test
+   fun testGetSetRemove() {
+      val api = FDatastore.api(UserInfo::class.java)
 
-        api.replaceBlocking { null }
-        assertEquals(null, api.getBlocking())
+      api.replaceBlocking { null }
+      assertEquals(null, api.getBlocking())
 
-        api.replaceBlocking { UserInfo(Int.MAX_VALUE) }
-        assertEquals(Int.MAX_VALUE, api.getBlocking()?.age)
-        assertEquals(true, api.getBlocking() === api.getBlocking())
+      api.replaceBlocking { UserInfo(Int.MAX_VALUE) }
+      assertEquals(Int.MAX_VALUE, api.getBlocking()?.age)
+      assertEquals(true, api.getBlocking() === api.getBlocking())
 
-        api.replaceBlocking { UserInfo(Int.MIN_VALUE) }
-        assertEquals(Int.MIN_VALUE, api.getBlocking()?.age)
-        assertEquals(true, api.getBlocking() === api.getBlocking())
+      api.replaceBlocking { UserInfo(Int.MIN_VALUE) }
+      assertEquals(Int.MIN_VALUE, api.getBlocking()?.age)
+      assertEquals(true, api.getBlocking() === api.getBlocking())
 
-        api.replaceBlocking { null }
-        assertEquals(null, api.getBlocking())
-    }
+      api.replaceBlocking { null }
+      assertEquals(null, api.getBlocking())
+   }
 
-    @Test
-    fun testUpdate() {
-        val api = FDatastore.api(UserInfo::class.java)
+   @Test
+   fun testUpdate() {
+      val api = FDatastore.api(UserInfo::class.java)
 
-        api.replaceBlocking { null }
-        assertEquals(null, api.getBlocking())
+      api.replaceBlocking { null }
+      assertEquals(null, api.getBlocking())
 
-        api.updateBlocking { it.copy(age = 1) }
-        assertEquals(null, api.getBlocking())
+      api.updateBlocking { it.copy(age = 1) }
+      assertEquals(null, api.getBlocking())
 
-        api.replaceBlocking { UserInfo(Int.MAX_VALUE) }
-        assertEquals(Int.MAX_VALUE, api.getBlocking()?.age)
+      api.replaceBlocking { UserInfo(Int.MAX_VALUE) }
+      assertEquals(Int.MAX_VALUE, api.getBlocking()?.age)
 
-        api.updateBlocking { it.copy(age = 2) }
-        assertEquals(2, api.getBlocking()?.age)
-    }
+      api.updateBlocking { it.copy(age = 2) }
+      assertEquals(2, api.getBlocking()?.age)
+   }
 }

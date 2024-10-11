@@ -7,19 +7,19 @@ import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.initIfNullBlocking
 
 class App : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        // 初始化
-        FDatastore.init(
-            context = this,
-            onError = {
-                logMsg { Log.getStackTraceString(it) }
-            }
-        )
-    }
+   override fun onCreate() {
+      super.onCreate()
+      // 初始化
+      FDatastore.init(
+         context = this,
+         onError = {
+            logMsg { Log.getStackTraceString(it) }
+         }
+      )
+   }
 }
 
 val userInfoDatastoreApi = FDatastore.api(UserInfo::class.java)
-    .apply {
-        initIfNullBlocking { UserInfo(age = 0) }
-    }
+   .apply {
+      initIfNullBlocking { UserInfo(age = 0) }
+   }

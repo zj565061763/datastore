@@ -4,5 +4,5 @@ import com.sd.lib.datastore.DatastoreType
 
 @DatastoreType("UserInfo")
 data class UserInfo(
-    val age: Int,
+   val age: Int,
 )

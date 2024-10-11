@@ -8,29 +8,29 @@ import java.io.InputStream
 import java.io.OutputStream
 
 internal class ModelSerializer<T>(
-    clazz: Class<T>,
+   clazz: Class<T>,
 ) : Serializer<Model<T>> {
 
-    private val _jsonAdapter: JsonAdapter<Model<T>> = fMoshi.adapter(
-        Types.newParameterizedType(Model::class.java, clazz)
-    )
+   private val _jsonAdapter: JsonAdapter<Model<T>> = fMoshi.adapter(
+      Types.newParameterizedType(Model::class.java, clazz)
+   )
 
-    override val defaultValue: Model<T> = Model()
+   override val defaultValue: Model<T> = Model()
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun writeTo(t: Model<T>, output: OutputStream) {
-        val json = _jsonAdapter.toJson(t)
-        output.write(json.toByteArray())
-    }
+   @Suppress("BlockingMethodInNonBlockingContext")
+   override suspend fun writeTo(t: Model<T>, output: OutputStream) {
+      val json = _jsonAdapter.toJson(t)
+      output.write(json.toByteArray())
+   }
 
-    override suspend fun readFrom(input: InputStream): Model<T> {
-        val bytes = input.readBytes()
-        if (bytes.isEmpty()) return defaultValue
-        val json = bytes.decodeToString()
-        return checkNotNull(_jsonAdapter.fromJson(json))
-    }
+   override suspend fun readFrom(input: InputStream): Model<T> {
+      val bytes = input.readBytes()
+      if (bytes.isEmpty()) return defaultValue
+      val json = bytes.decodeToString()
+      return checkNotNull(_jsonAdapter.fromJson(json))
+   }
 }
 
 internal data class Model<T>(
-    val data: T? = null,
+   val data: T? = null,
 )
