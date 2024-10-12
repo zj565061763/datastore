@@ -2,6 +2,7 @@ package com.sd.demo.datastore
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
+import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -10,6 +11,28 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class DatastoreTest {
+   @Test
+   fun testNoAnnotation() {
+      val result = runCatching {
+         FDatastore.api(TestModelNoAnnotation::class.java)
+      }
+      assertEquals(
+         "Annotation ${DatastoreType::class.java.simpleName} was not found in ${TestModelNoAnnotation::class.java.name}",
+         result.exceptionOrNull()!!.message
+      )
+   }
+
+   @Test
+   fun testEmptyId() {
+      val result = runCatching {
+         FDatastore.api(TestModelEmptyId::class.java)
+      }
+      assertEquals(
+         "DatastoreType.id is empty in ${TestModelEmptyId::class.java.name}",
+         result.exceptionOrNull()!!.message
+      )
+   }
+
    @Test
    fun testGetDatastoreApi() {
       val api1 = FDatastore.api(UserInfo::class.java)
