@@ -14,6 +14,14 @@ interface DatastoreApi<T> {
    /** 数据流 */
    val dataFlow: Flow<T?>
 
+   /**
+    * 数据流，如果数据为空，则调用[factory]创建数据，并根据[save]决定是否保存创建的数据
+    */
+   fun dataFlow(
+      save: Boolean = false,
+      factory: () -> T,
+   ): Flow<T>
+
    /** 获取数据 */
    suspend fun get(): T?
 
@@ -58,6 +66,19 @@ private class DatastoreApiImpl<T>(
    override val dataFlow: Flow<T?> = _datastore.data
       .catch { notifyError(it) }
       .map { it.data }
+
+   override fun dataFlow(
+      save: Boolean,
+      factory: () -> T,
+   ): Flow<T> {
+      return dataFlow.map { data ->
+         data ?: factory().also { newData ->
+            if (save) {
+               replace { it ?: newData }
+            }
+         }
+      }
+   }
 
    override suspend fun get(): T? {
       return dataFlow.first()
