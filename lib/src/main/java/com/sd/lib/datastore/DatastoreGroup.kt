@@ -35,7 +35,7 @@ private class DatastoreGroupImpl(
       }
 
       _holder[id]?.let { info ->
-         if (info.clazz != clazz) error("id:${id} has bound to ${info.clazz}")
+         if (info.clazz != clazz) error("id:${id} has bound to ${info.clazz.name} when bind ${clazz.name}")
          @Suppress("UNCHECKED_CAST")
          return info.api as DatastoreApi<T>
       }
