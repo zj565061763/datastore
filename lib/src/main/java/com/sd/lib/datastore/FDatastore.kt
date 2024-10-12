@@ -7,7 +7,7 @@ import java.io.File
 @SuppressLint("StaticFieldLeak")
 object FDatastore {
    private var _context: Context? = null
-   private lateinit var _onError: (Throwable) -> Unit
+   private lateinit var _onError: (DatastoreException) -> Unit
 
    private var _defaultGroup: DatastoreGroup? = null
 
@@ -18,7 +18,7 @@ object FDatastore {
    @JvmStatic
    fun init(
       context: Context,
-      onError: (Throwable) -> Unit = { it.printStackTrace() },
+      onError: (DatastoreException) -> Unit = { it.printStackTrace() },
    ): Boolean {
       synchronized(FDatastore) {
          return if (_context == null) {

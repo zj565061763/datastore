@@ -3,12 +3,14 @@ package com.sd.lib.datastore
 import androidx.datastore.core.Serializer
 import com.sd.lib.moshi.fMoshi
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Types
 import java.io.InputStream
 import java.io.OutputStream
 
 internal class ModelSerializer<T>(
-   clazz: Class<T>,
+   private val clazz: Class<T>,
+   private val onError: (DatastoreException) -> Unit,
 ) : Serializer<Model<T>> {
 
    private val _jsonAdapter: JsonAdapter<Model<T>> = fMoshi.adapter(
@@ -26,12 +28,17 @@ internal class ModelSerializer<T>(
    override suspend fun readFrom(input: InputStream): Model<T> {
       val bytes = input.readBytes()
       if (bytes.isEmpty()) return defaultValue
-      val json = String(bytes)
       return try {
+         val json = String(bytes)
          _jsonAdapter.fromJson(json)!!
-      } catch (e: Throwable) {
-         e.printStackTrace()
-         throw e
+      } catch (e: JsonDataException) {
+         onError(
+            DatastoreReadJsonException(
+               message = "Error read json for ${clazz.name}",
+               cause = e,
+            )
+         )
+         defaultValue
       }
    }
 }

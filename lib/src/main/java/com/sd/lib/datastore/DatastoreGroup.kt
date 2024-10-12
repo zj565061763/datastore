@@ -10,7 +10,7 @@ internal interface DatastoreGroup {
 
 internal fun DatastoreGroup(
    directory: File,
-   onError: (Throwable) -> Unit,
+   onError: (DatastoreException) -> Unit,
 ): DatastoreGroup {
    return DatastoreGroupImpl(
       directory = directory,
@@ -20,7 +20,7 @@ internal fun DatastoreGroup(
 
 private class DatastoreGroupImpl(
    private val directory: File,
-   private val onError: (Throwable) -> Unit,
+   private val onError: (DatastoreException) -> Unit,
 ) : DatastoreGroup {
 
    private val _holder: MutableMap<String, ApiInfo<*>> = mutableMapOf()

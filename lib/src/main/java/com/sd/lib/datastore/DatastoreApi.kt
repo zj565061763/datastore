@@ -33,7 +33,7 @@ interface DatastoreApi<T> {
 internal fun <T> DatastoreApi(
    file: File,
    clazz: Class<T>,
-   onError: (Throwable) -> Unit,
+   onError: (DatastoreException) -> Unit,
 ): DatastoreApi<T> {
    return DatastoreApiImpl(
       file = file,
@@ -45,9 +45,12 @@ internal fun <T> DatastoreApi(
 private class DatastoreApiImpl<T>(
    file: File,
    clazz: Class<T>,
-   private val onError: (Throwable) -> Unit,
+   private val onError: (DatastoreException) -> Unit,
 ) : DatastoreApi<T> {
-   private val _serializer = ModelSerializer(clazz)
+   private val _serializer = ModelSerializer(
+      clazz = clazz,
+      onError = { notifyError(it) }
+   )
 
    private val _datastore: DataStore<Model<T>> = MultiProcessDataStoreFactory.create(
       serializer = _serializer,
@@ -95,7 +98,8 @@ private class DatastoreApiImpl<T>(
 
    private fun notifyError(error: Throwable) {
       when (error) {
-         is java.io.IOException -> onError(error)
+         is DatastoreException -> onError(error)
+         is java.io.IOException -> onError(DatastoreIOException(cause = error))
          else -> throw error
       }
    }
