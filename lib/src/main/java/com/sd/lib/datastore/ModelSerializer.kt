@@ -33,13 +33,9 @@ internal class ModelSerializer<T>(
          _jsonAdapter.fromJson(json)!!
       }.getOrElse { e ->
          when (e) {
-            is JsonDataException -> onError(
-               DatastoreReadJsonException(
-                  message = "Error read json for ${clazz.name}",
-                  cause = e,
-               )
-            )
-            is java.io.IOException -> onError(
+            is JsonDataException,
+            is java.io.IOException,
+               -> onError(
                DatastoreReadJsonException(
                   message = "Error read json for ${clazz.name}",
                   cause = e,
