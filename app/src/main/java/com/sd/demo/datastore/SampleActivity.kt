@@ -27,7 +27,7 @@ class SampleActivity : ComponentActivity() {
       }
 
       lifecycleScope.launch {
-         userInfoApi.dataFlow.collect {
+         userInfoFlow.collect {
             logMsg { "dataFlow:$it" }
          }
       }
@@ -38,7 +38,7 @@ class SampleActivity : ComponentActivity() {
 private fun ContentView(
    modifier: Modifier = Modifier,
 ) {
-   val user by userInfoApi.dataFlow.collectAsStateWithLifecycle(initialValue = null)
+   val user by userInfoFlow.collectAsStateWithLifecycle(initialValue = null)
    val scope = rememberCoroutineScope()
 
    Column(
@@ -47,7 +47,7 @@ private fun ContentView(
    ) {
       Button(onClick = {
          scope.launch {
-            userInfoApi.update { it.copy(age = it.age + 1) }
+            userInfoStore.update { it.copy(age = it.age + 1) }
          }
       }) {
          Text(text = "+")
@@ -55,7 +55,7 @@ private fun ContentView(
 
       Button(onClick = {
          scope.launch {
-            userInfoApi.update { it.copy(age = it.age - 1) }
+            userInfoStore.update { it.copy(age = it.age - 1) }
          }
       }) {
          Text(text = "-")

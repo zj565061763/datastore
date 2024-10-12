@@ -2,6 +2,7 @@ package com.sd.demo.datastore
 
 import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
+import kotlinx.coroutines.flow.map
 
 @DatastoreType("UserInfo")
 data class UserInfo(
@@ -9,4 +10,6 @@ data class UserInfo(
    val name: String = "name",
 )
 
-val userInfoApi = FDatastore.api(UserInfo::class.java)
+val userInfoStore = FDatastore.api(UserInfo::class.java)
+
+val userInfoFlow = userInfoStore.dataFlow.map { it ?: UserInfo() }
