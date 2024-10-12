@@ -2,6 +2,7 @@ package com.sd.lib.datastore
 
 import java.io.File
 import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 internal interface DatastoreGroup {
    fun <T> api(clazz: Class<T>): DatastoreApi<T>
@@ -50,7 +51,8 @@ private class DatastoreGroupImpl(
 
    private fun directoryOfID(id: String): File {
       require(id.isNotEmpty()) { "id is empty" }
-      return directory.resolve(fMd5(id))
+      val dir = runCatching { fMd5(id.toByteArray()) }.getOrDefault(id)
+      return directory.resolve(dir)
    }
 
    private data class ApiInfo<T>(
@@ -59,11 +61,12 @@ private class DatastoreGroupImpl(
    )
 }
 
-private fun fMd5(input: String): String {
-   val md5Bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray())
+@Throws(NoSuchAlgorithmException::class)
+private fun fMd5(input: ByteArray): String {
+   val md5Bytes = MessageDigest.getInstance("MD5").digest(input)
    return buildString {
       for (byte in md5Bytes) {
-         val hex = Integer.toHexString(0xff and byte.toInt())
+         val hex = (0xff and byte.toInt()).toString(16)
          if (hex.length == 1) append("0")
          append(hex)
       }
