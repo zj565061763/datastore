@@ -41,7 +41,7 @@ object FDatastore {
          DatastoreGroup(
             directory = getDirectory().resolve("default"),
             onError = _onError,
-         ).let {
+         ).also {
             _defaultGroup = it
             return it.api(clazz)
          }
