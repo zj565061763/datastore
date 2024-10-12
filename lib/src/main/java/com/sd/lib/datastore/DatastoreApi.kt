@@ -48,16 +48,16 @@ private class DatastoreApiImpl<T>(
    private val onError: (Throwable) -> Unit,
 ) : DatastoreApi<T> {
    private val _serializer = ModelSerializer(clazz)
+
    private val _datastore: DataStore<Model<T>> = MultiProcessDataStoreFactory.create(
       serializer = _serializer,
       corruptionHandler = ReplaceFileCorruptionHandler { _serializer.defaultValue },
       produceFile = { file },
    )
 
-   override val dataFlow: Flow<T?>
-      get() = _datastore.data
-         .catch { notifyError(it) }
-         .map { it.data }
+   override val dataFlow: Flow<T?> = _datastore.data
+      .catch { notifyError(it) }
+      .map { it.data }
 
    override suspend fun get(): T? {
       return dataFlow.firstOrNull()
