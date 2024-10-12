@@ -33,19 +33,18 @@ private class DatastoreGroupImpl(
          throw IllegalArgumentException("DatastoreType.id is empty")
       }
 
-      synchronized(this@DatastoreGroupImpl) {
-         _holder[id]?.let { info ->
-            if (info.clazz != clazz) error("id:${id} has bound to ${info.clazz}")
-            @Suppress("UNCHECKED_CAST")
-            return info.api as DatastoreApi<T>
-         }
-         return DatastoreApi(
-            file = directoryOfID(id).resolve("default"),
-            clazz = clazz,
-            onError = onError,
-         ).also { api ->
-            _holder[id] = ApiInfo(api, clazz)
-         }
+      _holder[id]?.let { info ->
+         if (info.clazz != clazz) error("id:${id} has bound to ${info.clazz}")
+         @Suppress("UNCHECKED_CAST")
+         return info.api as DatastoreApi<T>
+      }
+
+      return DatastoreApi(
+         file = directoryOfID(id).resolve("default"),
+         clazz = clazz,
+         onError = onError,
+      ).also { api ->
+         _holder[id] = ApiInfo(api, clazz)
       }
    }
 
