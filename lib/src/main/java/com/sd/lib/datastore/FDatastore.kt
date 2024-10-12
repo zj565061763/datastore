@@ -37,14 +37,11 @@ object FDatastore {
    @JvmStatic
    fun <T> api(clazz: Class<T>): DatastoreApi<T> {
       synchronized(FDatastore) {
-         _defaultGroup?.let { return it.api(clazz) }
-         DatastoreGroup(
+         val group = _defaultGroup ?: DatastoreGroup(
             directory = getDirectory().resolve("default"),
             onError = _onError,
-         ).also {
-            _defaultGroup = it
-            return it.api(clazz)
-         }
+         ).also { _defaultGroup = it }
+         return group.api(clazz)
       }
    }
 
