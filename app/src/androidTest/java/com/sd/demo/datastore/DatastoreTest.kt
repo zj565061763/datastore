@@ -58,26 +58,30 @@ class DatastoreTest {
       run {
          var count = 0
          api.update {
-            count = 1
+            count++
             it.copy(age = 1)
          }
          assertEquals(null, api.get())
          assertEquals(0, count)
       }
 
-      api.replace { UserInfo(Int.MAX_VALUE) }
-      assertEquals(Int.MAX_VALUE, api.get()?.age)
+      testReplaceSuccess(api, Int.MAX_VALUE)
 
-      api.update { it.copy(age = 2) }
-      assertEquals(2, api.get()?.age)
+      run {
+         var count = 0
+         api.update {
+            count++
+            it.copy(age = 2)
+         }
+         assertEquals(2, api.get()?.age)
+         assertEquals(1, count)
+      }
    }
 
    @Test
    fun testDataFlow(): Unit = runBlocking {
       val api = FDatastore.api(UserInfo::class.java)
-
-      api.replace { null }
-      assertEquals(null, api.get())
+      testReplaceNull(api)
 
       api.dataFlow.test {
          assertEquals(null, awaitItem())
