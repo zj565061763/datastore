@@ -17,10 +17,10 @@ interface DatastoreApi<T> {
    /** 获取数据 */
    suspend fun get(): T?
 
-   /** 替换数据 */
+   /** 用[data]替换数据 */
    suspend fun replace(data: T?): T?
 
-   /** 替换数据 */
+   /** 用[transform]替换数据 */
    suspend fun replace(transform: suspend (T?) -> T?): T?
 
    /** 已保存数据不为null，才会调用[transform]更新数据 */
