@@ -44,7 +44,7 @@ private class DatastoreGroupImpl(
          clazz = clazz,
          onError = onError,
       ).also { api ->
-         _holder[id] = ApiInfo(api, clazz)
+         _holder[id] = ApiInfo(clazz, api)
       }
    }
 
@@ -54,8 +54,8 @@ private class DatastoreGroupImpl(
    }
 
    private data class ApiInfo<T>(
-      val api: DatastoreApi<T>,
       val clazz: Class<T>,
+      val api: DatastoreApi<T>,
    )
 }
 
