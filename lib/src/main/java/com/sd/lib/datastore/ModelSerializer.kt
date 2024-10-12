@@ -28,16 +28,25 @@ internal class ModelSerializer<T>(
    override suspend fun readFrom(input: InputStream): Model<T> {
       val bytes = input.readBytes()
       if (bytes.isEmpty()) return defaultValue
-      return try {
+      return runCatching {
          val json = String(bytes)
          _jsonAdapter.fromJson(json)!!
-      } catch (e: JsonDataException) {
-         onError(
-            DatastoreReadJsonException(
-               message = "Error read json for ${clazz.name}",
-               cause = e,
+      }.getOrElse { e ->
+         when (e) {
+            is JsonDataException -> onError(
+               DatastoreReadJsonException(
+                  message = "Error read json for ${clazz.name}",
+                  cause = e,
+               )
             )
-         )
+            is java.io.IOException -> onError(
+               DatastoreReadJsonException(
+                  message = "Error read json for ${clazz.name}",
+                  cause = e,
+               )
+            )
+            else -> throw e
+         }
          defaultValue
       }
    }
