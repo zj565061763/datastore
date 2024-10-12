@@ -10,10 +10,10 @@
 
 ```kotlin
 FDatastore.init(
-    context = this,
-    onError = {
-        // 错误回调
-    }
+   context = this,
+   onError = {
+      // 错误回调
+   }
 )
 ```
 
@@ -22,7 +22,8 @@ FDatastore.init(
 ```kotlin
 @DatastoreType(id = "UserInfo")
 data class UserInfo(
-    val age: Int,
+   val age: Int = 0,
+   val name: String = "name",
 )
 ```
 
@@ -32,7 +33,7 @@ data class UserInfo(
 ### 获取Api
 
 ```kotlin
-val userInfoDatastoreApi: DatastoreApi<UserInfo> = FDatastore.api(UserInfo::class.java)
+val datastoreApi: DatastoreApi<UserInfo> = FDatastore.api(UserInfo::class.java)
 ```
 
 ### 使用Api
@@ -40,31 +41,29 @@ val userInfoDatastoreApi: DatastoreApi<UserInfo> = FDatastore.api(UserInfo::clas
 挂起Api：
 
 ```kotlin
-lifecycleScope.launch {
-    // 获取数据
-    val data = api.get()
+interface DatastoreApi<T> {
 
-    api.replace {
-        // 替换数据，null-表示清空数据
-        null
-    }
+   /** 数据流 */
+   val dataFlow: Flow<T?>
 
-    api.replace { data ->
-        // 替换数据，如果没有数据则data为null
-        data?.copy(age = 100)
-    }
+   /**
+    * 数据流，如果数据为空，则调用[factory]创建数据，并根据[save]决定是否保存创建的数据
+    */
+   fun dataFlow(
+      save: Boolean = false,
+      factory: () -> T,
+   ): Flow<T>
 
-    api.update { data ->
-        // 更新数据，此时本地一定有数据，data不为null，同时返回值也不允许为null
-        data.copy(age = 200)
-    }
+   /** 获取数据 */
+   suspend fun get(): T?
+
+   /** 用[data]替换数据 */
+   suspend fun replace(data: T?): T?
+
+   /** 用[transform]替换数据 */
+   suspend fun replace(transform: suspend (T?) -> T?): T?
+
+   /** 已保存数据不为null，才会调用[transform]更新数据 */
+   suspend fun update(transform: suspend (T) -> T): T?
 }
-```
-
-在协程外调用，可以使用同步Api：
-
-```kotlin
-api.getBlocking()
-api.replaceBlocking { null }
-api.updateBlocking { it.copy(age = 200) }
 ```
