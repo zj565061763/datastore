@@ -38,8 +38,6 @@ val datastoreApi: DatastoreApi<UserInfo> = FDatastore.api(UserInfo::class.java)
 
 ### 使用Api
 
-挂起Api：
-
 ```kotlin
 interface DatastoreApi<T> {
 
