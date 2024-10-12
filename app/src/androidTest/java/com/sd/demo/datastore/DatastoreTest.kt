@@ -47,73 +47,97 @@ class DatastoreTest {
    }
 
    @Test
-   fun testGetDatastoreApi() {
-      val api1 = FDatastore.api(UserInfo::class.java)
-      val api2 = FDatastore.api(UserInfo::class.java)
-      assertEquals(true, api1 === api2)
+   fun testGetDatastoreApi() = runBlocking {
+      val store1 = getUserInfoStore()
+      val store2 = getUserInfoStore()
+      assertEquals(true, store1 === store2)
    }
 
    @Test
    fun testDatastore(): Unit = runBlocking {
-      val api = FDatastore.api(UserInfo::class.java)
-      testReplaceNull(api)
-      testReplaceSuccess(api, 1)
-      testReplaceSuccess(api, 2)
-      testReplaceNull(api)
+      val store = getUserInfoStore()
+      testReplaceSuccess(store, 1)
+      testReplaceSuccess(store, 2)
+      testReplaceNull(store)
    }
 
    @Test
    fun testUpdate(): Unit = runBlocking {
-      val api = FDatastore.api(UserInfo::class.java)
-      testReplaceNull(api)
+      val store = getUserInfoStore()
 
       run {
          var count = 0
-         api.update {
+         store.update {
             count++
             it.copy(age = 1)
          }
-         assertEquals(null, api.get())
+         assertEquals(null, store.get())
          assertEquals(0, count)
       }
 
       run {
-         testReplaceSuccess(api, Int.MAX_VALUE)
+         testReplaceSuccess(store, Int.MAX_VALUE)
          var count = 0
-         api.update {
+         store.update {
             count++
             it.copy(age = 2)
          }
-         assertEquals(2, api.get()!!.age)
+         assertEquals(2, store.get()!!.age)
          assertEquals(1, count)
       }
    }
 
    @Test
    fun testDataFlow(): Unit = runBlocking {
-      val api = FDatastore.api(UserInfo::class.java)
-      testReplaceNull(api)
+      val store = getUserInfoStore()
 
-      api.dataFlow.test {
+      store.dataFlow.test {
          assertEquals(null, awaitItem())
 
-         api.replace(UserInfo(age = 0))
-         api.replace(UserInfo(age = 0))
-         assertEquals(0, awaitItem()!!.age)
-
-         api.update { it.copy(age = 1) }
+         store.replace(UserInfo(age = 1))
+         store.replace(UserInfo(age = 1))
          assertEquals(1, awaitItem()!!.age)
+
+         store.update { it.copy(age = 2) }
+         assertEquals(2, awaitItem()!!.age)
+      }
+   }
+
+   @Test
+   fun testNoneNullDataFlow(): Unit = runBlocking {
+      val store = getUserInfoStore()
+      store.dataFlow { UserInfo(age = 1) }.test {
+         assertEquals(1, awaitItem().age)
+         assertEquals(null, store.get())
+      }
+   }
+
+   @Test
+   fun testNoneNullDataFlowSave(): Unit = runBlocking {
+      val store = getUserInfoStore()
+      store.dataFlow(save = true) { UserInfo(age = 1) }.test {
+         // 第一次是默认值
+         assertEquals(1, awaitItem().age)
+         // 第二次是默认值保存成功后触发的
+         assertEquals(1, awaitItem().age)
+         assertEquals(1, store.get()!!.age)
       }
    }
 }
 
-private suspend fun testReplaceNull(api: DatastoreApi<UserInfo>) {
-   api.replace(null)
-   assertEquals(null, api.get())
+private suspend fun getUserInfoStore(): DatastoreApi<UserInfo> {
+   return FDatastore.api(UserInfo::class.java).also {
+      testReplaceNull(it)
+   }
 }
 
-private suspend fun testReplaceSuccess(api: DatastoreApi<UserInfo>, age: Int) {
-   api.replace(UserInfo(age = age))
-   assertEquals(age, api.get()!!.age)
-   assertEquals(true, api.get()!! === api.get())
+private suspend fun testReplaceNull(store: DatastoreApi<UserInfo>) {
+   store.replace(null)
+   assertEquals(null, store.get())
+}
+
+private suspend fun testReplaceSuccess(store: DatastoreApi<UserInfo>, age: Int) {
+   store.replace(UserInfo(age = age))
+   assertEquals(age, store.get()!!.age)
+   assertEquals(true, store.get()!! === store.get())
 }
