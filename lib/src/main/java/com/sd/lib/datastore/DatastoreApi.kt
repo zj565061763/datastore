@@ -5,7 +5,7 @@ import androidx.datastore.core.MultiProcessDataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.io.File
 
@@ -63,7 +63,7 @@ private class DatastoreApiImpl<T>(
       .map { it.data }
 
    override suspend fun get(): T? {
-      return dataFlow.firstOrNull()
+      return dataFlow.first()
    }
 
    override suspend fun replace(transform: suspend (T?) -> T?): T? {
