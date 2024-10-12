@@ -2,6 +2,7 @@ package com.sd.demo.datastore
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
+import com.sd.lib.datastore.DatastoreApi
 import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
 import kotlinx.coroutines.runBlocking
@@ -43,28 +44,17 @@ class DatastoreTest {
    @Test
    fun testGetSetRemove(): Unit = runBlocking {
       val api = FDatastore.api(UserInfo::class.java)
-
-      api.replace { null }
-      assertEquals(null, api.get())
-
-      api.replace { UserInfo(Int.MAX_VALUE) }
-      assertEquals(Int.MAX_VALUE, api.get()?.age)
-      assertEquals(true, api.get() === api.get())
-
-      api.replace { UserInfo(Int.MIN_VALUE) }
-      assertEquals(Int.MIN_VALUE, api.get()?.age)
-      assertEquals(true, api.get() === api.get())
-
-      api.replace { null }
-      assertEquals(null, api.get())
+      testReplaceNull(api)
+      testReplaceSuccess(api, 1)
+      testReplaceSuccess(api, 2)
+      testReplaceNull(api)
    }
+
 
    @Test
    fun testUpdate(): Unit = runBlocking {
       val api = FDatastore.api(UserInfo::class.java)
-
-      api.replace { null }
-      assertEquals(null, api.get())
+      testReplaceNull(api)
 
       api.update { it.copy(age = 1) }
       assertEquals(null, api.get())
@@ -93,4 +83,15 @@ class DatastoreTest {
          assertEquals(1, awaitItem()?.age)
       }
    }
+}
+
+private suspend fun testReplaceNull(api: DatastoreApi<UserInfo>) {
+   api.replace { null }
+   assertEquals(null, api.get())
+}
+
+private suspend fun testReplaceSuccess(api: DatastoreApi<UserInfo>, value: Int) {
+   api.replace { UserInfo(value) }
+   assertEquals(value, api.get()!!.age)
+   assertEquals(true, api.get()!! === api.get())
 }
