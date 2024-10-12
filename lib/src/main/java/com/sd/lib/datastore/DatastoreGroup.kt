@@ -30,7 +30,7 @@ private class DatastoreGroupImpl(
       }
 
       val id = datastoreType.id.ifEmpty {
-         throw IllegalArgumentException("DatastoreType.id is empty")
+         throw IllegalArgumentException("DatastoreType.id is empty in ${clazz.name}")
       }
 
       _holder[id]?.let { info ->
