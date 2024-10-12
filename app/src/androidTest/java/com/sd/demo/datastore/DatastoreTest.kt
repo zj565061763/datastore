@@ -42,14 +42,13 @@ class DatastoreTest {
    }
 
    @Test
-   fun testGetSetRemove(): Unit = runBlocking {
+   fun testDatastore(): Unit = runBlocking {
       val api = FDatastore.api(UserInfo::class.java)
       testReplaceNull(api)
       testReplaceSuccess(api, 1)
       testReplaceSuccess(api, 2)
       testReplaceNull(api)
    }
-
 
    @Test
    fun testUpdate(): Unit = runBlocking {
