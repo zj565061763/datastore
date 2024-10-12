@@ -26,8 +26,13 @@ internal class ModelSerializer<T>(
    override suspend fun readFrom(input: InputStream): Model<T> {
       val bytes = input.readBytes()
       if (bytes.isEmpty()) return defaultValue
-      val json = bytes.decodeToString()
-      return _jsonAdapter.fromJson(json)!!
+      val json = String(bytes)
+      return try {
+         _jsonAdapter.fromJson(json)!!
+      } catch (e: Throwable) {
+         e.printStackTrace()
+         throw e
+      }
    }
 }
 
