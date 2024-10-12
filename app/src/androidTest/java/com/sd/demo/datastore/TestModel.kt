@@ -10,3 +10,13 @@ data class TestModelNoAnnotation(
 data class TestModelEmptyId(
    val name: String,
 )
+
+@DatastoreType("SameId")
+data class TestModelSameId1(
+   val name: String,
+)
+
+@DatastoreType("SameId")
+data class TestModelSameId2(
+   val name: String,
+)

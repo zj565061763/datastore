@@ -35,6 +35,18 @@ class DatastoreTest {
    }
 
    @Test
+   fun testSameId() {
+      FDatastore.api(TestModelSameId1::class.java)
+      val result = runCatching {
+         FDatastore.api(TestModelSameId2::class.java)
+      }
+      assertEquals(
+         "id:SameId has bound to ${TestModelSameId1::class.java.name} when bind ${TestModelSameId2::class.java.name}",
+         result.exceptionOrNull()!!.message
+      )
+   }
+
+   @Test
    fun testGetDatastoreApi() {
       val api1 = FDatastore.api(UserInfo::class.java)
       val api2 = FDatastore.api(UserInfo::class.java)
