@@ -55,8 +55,15 @@ class DatastoreTest {
       val api = FDatastore.api(UserInfo::class.java)
       testReplaceNull(api)
 
-      api.update { it.copy(age = 1) }
-      assertEquals(null, api.get())
+      run {
+         var count = 0
+         api.update {
+            count = 1
+            it.copy(age = 1)
+         }
+         assertEquals(null, api.get())
+         assertEquals(0, count)
+      }
 
       api.replace { UserInfo(Int.MAX_VALUE) }
       assertEquals(Int.MAX_VALUE, api.get()?.age)
