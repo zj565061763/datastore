@@ -77,15 +77,14 @@ class DatastoreTest {
          assertEquals(0, count)
       }
 
-      testReplaceSuccess(api, Int.MAX_VALUE)
-
       run {
+         testReplaceSuccess(api, Int.MAX_VALUE)
          var count = 0
          api.update {
             count++
             it.copy(age = 2)
          }
-         assertEquals(2, api.get()?.age)
+         assertEquals(2, api.get()!!.age)
          assertEquals(1, count)
       }
    }
@@ -99,10 +98,11 @@ class DatastoreTest {
          assertEquals(null, awaitItem())
 
          api.replace(UserInfo(age = 0))
-         assertEquals(0, awaitItem()?.age)
+         api.replace(UserInfo(age = 0))
+         assertEquals(0, awaitItem()!!.age)
 
          api.update { it.copy(age = 1) }
-         assertEquals(1, awaitItem()?.age)
+         assertEquals(1, awaitItem()!!.age)
       }
    }
 }
@@ -112,8 +112,8 @@ private suspend fun testReplaceNull(api: DatastoreApi<UserInfo>) {
    assertEquals(null, api.get())
 }
 
-private suspend fun testReplaceSuccess(api: DatastoreApi<UserInfo>, value: Int) {
-   api.replace(UserInfo(age = value))
-   assertEquals(value, api.get()!!.age)
+private suspend fun testReplaceSuccess(api: DatastoreApi<UserInfo>, age: Int) {
+   api.replace(UserInfo(age = age))
+   assertEquals(age, api.get()!!.age)
    assertEquals(true, api.get()!! === api.get())
 }
