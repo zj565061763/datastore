@@ -15,18 +15,21 @@ class DatastoreJavaApi<T>(
    /**
     * [DatastoreApi.replace]
     */
+   fun replace(data: T?): T? {
+      return runBlocking { api.replace(data) }
+   }
+
+   /**
+    * [DatastoreApi.replace]
+    */
    fun replace(transform: (T?) -> T?): T? {
-      return runBlocking {
-         api.replace { transform(it) }
-      }
+      return runBlocking { api.replace { transform(it) } }
    }
 
    /**
     * [DatastoreApi.update]
     */
    fun update(transform: (T) -> T): T? {
-      return runBlocking {
-         api.update { transform(it) }
-      }
+      return runBlocking { api.update { transform(it) } }
    }
 }

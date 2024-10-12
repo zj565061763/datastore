@@ -98,7 +98,7 @@ class DatastoreTest {
       api.dataFlow.test {
          assertEquals(null, awaitItem())
 
-         api.replace { UserInfo(0) }
+         api.replace(UserInfo(age = 0))
          assertEquals(0, awaitItem()?.age)
 
          api.update { it.copy(age = 1) }
@@ -108,12 +108,12 @@ class DatastoreTest {
 }
 
 private suspend fun testReplaceNull(api: DatastoreApi<UserInfo>) {
-   api.replace { null }
+   api.replace(null)
    assertEquals(null, api.get())
 }
 
 private suspend fun testReplaceSuccess(api: DatastoreApi<UserInfo>, value: Int) {
-   api.replace { UserInfo(value) }
+   api.replace(UserInfo(age = value))
    assertEquals(value, api.get()!!.age)
    assertEquals(true, api.get()!! === api.get())
 }

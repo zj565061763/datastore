@@ -14,19 +14,16 @@ interface DatastoreApi<T> {
    /** 数据流 */
    val dataFlow: Flow<T?>
 
-   /**
-    * 获取数据
-    */
+   /** 获取数据 */
    suspend fun get(): T?
 
-   /**
-    * 替换数据
-    */
+   /** 替换数据 */
+   suspend fun replace(data: T?): T?
+
+   /** 替换数据 */
    suspend fun replace(transform: suspend (T?) -> T?): T?
 
-   /**
-    * 已保存数据不为null，才会调用[transform]更新数据
-    */
+   /** 已保存数据不为null，才会调用[transform]更新数据 */
    suspend fun update(transform: suspend (T) -> T): T?
 }
 
@@ -64,6 +61,10 @@ private class DatastoreApiImpl<T>(
 
    override suspend fun get(): T? {
       return dataFlow.first()
+   }
+
+   override suspend fun replace(data: T?): T? {
+      return replace { data }
    }
 
    override suspend fun replace(transform: suspend (T?) -> T?): T? {
