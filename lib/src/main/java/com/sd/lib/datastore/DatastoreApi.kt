@@ -121,7 +121,7 @@ private class DatastoreApiImpl<T>(
    private fun notifyError(error: Throwable) {
       when (error) {
          is DatastoreException -> onError(error)
-         is java.io.IOException -> onError(DatastoreIOException(cause = error))
+         is java.io.IOException -> onError(DatastoreException(message = "", cause = error))
          else -> throw error
       }
    }
