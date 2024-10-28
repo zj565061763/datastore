@@ -29,6 +29,7 @@ data class UserInfo(
 
 * 数据对象必须是不可变的，例如使用`data class`并用`val`定义属性
 * 使用`DatastoreType`注解标注类，注解中的`id`必须全局唯一
+* 建议给所有属性设置默认值，App版本升级时，新增的字段在旧版本上不存在，会使用默认值
 
 ### 获取Api
 
