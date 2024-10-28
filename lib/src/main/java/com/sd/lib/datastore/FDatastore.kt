@@ -47,12 +47,8 @@ object FDatastore {
 
    @SuppressLint("SdCardPath")
    private fun getDirectory(): File {
+      val context = _context ?: error("FDatastore.init() should be called before this.")
       val filesDir = context.filesDir ?: File("/data/data/${context.packageName}/files")
       return filesDir.resolve("sd.lib.datastore")
    }
-
-   private val context: Context
-      get() = _context ?: synchronized(FDatastore) {
-         checkNotNull(_context) { "FDatastore.init() should be called before this." }
-      }
 }
