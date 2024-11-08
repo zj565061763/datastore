@@ -11,8 +11,13 @@ import org.junit.Test
 class DatastoreWithDefaultTest {
    @Test
    fun testGet(): Unit = runBlocking {
-      val default = TestModel()
-      assertEquals(default, getStore().get())
+      assertEquals(TestModel(), getStore().get())
+   }
+
+   @Test
+   fun testUpdate(): Unit = runBlocking {
+      val store = getStore()
+      assertEquals(TestModel(), store.update { it })
    }
 }
 
