@@ -5,7 +5,12 @@ open class DatastoreException internal constructor(
    cause: Throwable,
 ) : Exception(message, cause)
 
-class DatastoreReadJsonException internal constructor(
+class DatastoreWriteDataException internal constructor(
+   message: String,
+   cause: Throwable,
+) : DatastoreException(message, cause)
+
+class DatastoreReadDataException internal constructor(
    message: String,
    cause: Throwable,
 ) : DatastoreException(message, cause)

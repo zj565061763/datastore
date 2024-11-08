@@ -24,7 +24,7 @@ object FDatastore {
          return if (_context == null) {
             _context = context.applicationContext
             _onError = onError
-            true
+            _context != null
          } else {
             false
          }

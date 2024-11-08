@@ -5,6 +5,9 @@ import app.cash.turbine.test
 import com.sd.lib.datastore.DatastoreApi
 import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
+import com.sd.lib.datastore.flowWithDefault
+import com.sd.lib.datastore.get
+import com.sd.lib.datastore.update
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -48,14 +51,14 @@ class DatastoreTest {
 
    @Test
    fun testGetDatastoreApi() = runBlocking {
-      val store1 = getUserInfoStore()
-      val store2 = getUserInfoStore()
+      val store1 = getStore()
+      val store2 = getStore()
       assertEquals(true, store1 === store2)
    }
 
    @Test
    fun testDatastore(): Unit = runBlocking {
-      val store = getUserInfoStore()
+      val store = getStore()
       testReplaceSuccess(store, 1)
       testReplaceSuccess(store, 2)
       testReplaceNull(store)
@@ -63,7 +66,7 @@ class DatastoreTest {
 
    @Test
    fun testUpdate(): Unit = runBlocking {
-      val store = getUserInfoStore()
+      val store = getStore()
 
       run {
          var count = 0
@@ -89,13 +92,13 @@ class DatastoreTest {
 
    @Test
    fun testDataFlow(): Unit = runBlocking {
-      val store = getUserInfoStore()
+      val store = getStore()
 
-      store.dataFlow.test {
+      store.flow.test {
          assertEquals(null, awaitItem())
 
-         store.replace(UserInfo(age = 1))
-         store.replace(UserInfo(age = 1))
+         store.replace { TestModel(age = 1) }
+         store.replace { TestModel(age = 1) }
          assertEquals(1, awaitItem()!!.age)
 
          store.update { it.copy(age = 2) }
@@ -105,8 +108,8 @@ class DatastoreTest {
 
    @Test
    fun testNoneNullDataFlow(): Unit = runBlocking {
-      val store = getUserInfoStore()
-      store.dataFlow { UserInfo(age = 1) }.test {
+      val store = getStore()
+      store.flowWithDefault { TestModel(age = 1) }.test {
          assertEquals(1, awaitItem().age)
          assertEquals(null, store.get())
       }
@@ -114,30 +117,27 @@ class DatastoreTest {
 
    @Test
    fun testNoneNullDataFlowSave(): Unit = runBlocking {
-      val store = getUserInfoStore()
-      store.dataFlow(save = true) { UserInfo(age = 1) }.test {
-         // 第一次是默认值
-         assertEquals(1, awaitItem().age)
-         // 第二次是默认值保存成功后触发的
+      val store = getStore()
+      store.flowWithDefault(save = true) { TestModel(age = 1) }.test {
          assertEquals(1, awaitItem().age)
          assertEquals(1, store.get()!!.age)
       }
    }
 }
 
-private suspend fun getUserInfoStore(): DatastoreApi<UserInfo> {
-   return FDatastore.api(UserInfo::class.java).also {
+private suspend fun getStore(): DatastoreApi<TestModel> {
+   return FDatastore.api(TestModel::class.java).also {
       testReplaceNull(it)
    }
 }
 
-private suspend fun testReplaceNull(store: DatastoreApi<UserInfo>) {
-   store.replace(null)
+private suspend fun testReplaceNull(store: DatastoreApi<TestModel>) {
+   store.replace { null }
    assertEquals(null, store.get())
 }
 
-private suspend fun testReplaceSuccess(store: DatastoreApi<UserInfo>, age: Int) {
-   store.replace(UserInfo(age = age))
+private suspend fun testReplaceSuccess(store: DatastoreApi<TestModel>, age: Int) {
+   store.replace { TestModel(age = age) }
    assertEquals(age, store.get()!!.age)
    assertEquals(true, store.get()!! === store.get())
 }

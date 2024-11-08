@@ -20,3 +20,8 @@ data class TestModelSameId1(
 data class TestModelSameId2(
    val name: String,
 )
+
+@DatastoreType("TestModel")
+data class TestModel(
+   val age: Int = 0,
+)
