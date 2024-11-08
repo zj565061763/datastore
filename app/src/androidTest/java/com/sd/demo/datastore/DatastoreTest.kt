@@ -39,13 +39,14 @@ class DatastoreTest {
    @Test
    fun testSameId() {
       FDatastore.get(TestModelSameId1::class.java)
-      val result = runCatching {
+      runCatching {
          FDatastore.get(TestModelSameId2::class.java)
+      }.let { result ->
+         assertEquals(
+            "id:SameId has bound to ${TestModelSameId1::class.java.name} when bind ${TestModelSameId2::class.java.name}",
+            result.exceptionOrNull()!!.message
+         )
       }
-      assertEquals(
-         "id:SameId has bound to ${TestModelSameId1::class.java.name} when bind ${TestModelSameId2::class.java.name}",
-         result.exceptionOrNull()!!.message
-      )
    }
 
    @Test
