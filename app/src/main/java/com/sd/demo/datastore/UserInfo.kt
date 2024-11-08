@@ -2,10 +2,8 @@ package com.sd.demo.datastore
 
 import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
+import com.sd.lib.datastore.flowWithDefault
 import com.sd.lib.datastore.update
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
 
 @DatastoreType("UserInfo")
 data class UserInfo(
@@ -15,20 +13,14 @@ data class UserInfo(
    companion object {
       private val store = FDatastore.api(UserInfo::class.java)
 
-      val flow = store.flow.filterNotNull()
+      val flow = store.flowWithDefault(save = true) { UserInfo() }
 
-      suspend fun increment() {
-         store.update { it.copy(age = it.age + 1) }
+      suspend fun increment() = store.update {
+         it.copy(age = it.age + 1)
       }
 
-      suspend fun decrement() {
-         store.update { it.copy(age = it.age - 1) }
-      }
-
-      init {
-         GlobalScope.launch {
-            store.replace { it ?: UserInfo() }
-         }
+      suspend fun decrement() = store.update {
+         it.copy(age = it.age - 1)
       }
    }
 }
