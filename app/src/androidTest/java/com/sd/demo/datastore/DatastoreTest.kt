@@ -139,7 +139,10 @@ private suspend fun testReplaceNull(store: DatastoreApi<TestModel>) {
 }
 
 private suspend fun testReplaceSuccess(store: DatastoreApi<TestModel>, age: Int) {
-   store.replace { TestModel(age = age) }
-   assertEquals(age, store.get()!!.age)
-   assertEquals(true, store.get()!! === store.get())
+   val data = TestModel(age = age)
+   store.replace { data }.also {
+      assertEquals(true, it === data)
+   }
+   assertEquals(true, store.get() === data)
+   assertEquals(true, store.get() === data)
 }
