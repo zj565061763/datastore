@@ -32,7 +32,7 @@ object FDatastore {
    }
 
    /**
-    * 获取[clazz]的Api
+    * 获取[clazz]对应的[DatastoreApi]
     */
    @JvmStatic
    fun <T> api(clazz: Class<T>): DatastoreApi<T> {
