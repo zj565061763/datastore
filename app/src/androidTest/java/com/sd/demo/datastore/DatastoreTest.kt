@@ -98,17 +98,17 @@ class DatastoreTest {
 
    @Test
    fun testDataFlow(): Unit = runBlocking {
-      val store = getStore()
+      with(getStore()) {
+         flow.test {
+            assertEquals(null, awaitItem())
 
-      store.flow.test {
-         assertEquals(null, awaitItem())
+            replace { TestModel(age = 1) }
+            replace { TestModel(age = 1) }
+            assertEquals(1, awaitItem()!!.age)
 
-         store.replace { TestModel(age = 1) }
-         store.replace { TestModel(age = 1) }
-         assertEquals(1, awaitItem()!!.age)
-
-         store.update { it.copy(age = 2) }
-         assertEquals(2, awaitItem()!!.age)
+            update { it.copy(age = 2) }
+            assertEquals(2, awaitItem()!!.age)
+         }
       }
    }
 
