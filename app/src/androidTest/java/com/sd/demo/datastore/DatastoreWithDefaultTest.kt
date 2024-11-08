@@ -18,6 +18,11 @@ class DatastoreWithDefaultTest {
    fun testUpdate(): Unit = runBlocking {
       val store = getStore()
       assertEquals(TestModel(), store.update { it })
+
+      val model = TestModel(age = 1)
+      store.update { model }.also { result ->
+         assertEquals(true, result === model)
+      }
    }
 }
 
