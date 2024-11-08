@@ -5,7 +5,6 @@ import app.cash.turbine.test
 import com.sd.lib.datastore.DatastoreApi
 import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
-import com.sd.lib.datastore.flowWithDefault
 import com.sd.lib.datastore.get
 import com.sd.lib.datastore.update
 import kotlinx.coroutines.runBlocking
