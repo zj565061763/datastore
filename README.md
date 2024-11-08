@@ -34,35 +34,23 @@ data class UserInfo(
 ### 获取Api
 
 ```kotlin
-val datastoreApi: DatastoreApi<UserInfo> = FDatastore.api(UserInfo::class.java)
+val datastoreApi: DatastoreApi<UserInfo> = FDatastore.get(UserInfo::class.java)
 ```
 
 ### 使用Api
 
 ```kotlin
 interface DatastoreApi<T> {
-
    /** 数据流 */
-   val dataFlow: Flow<T?>
+   val flow: Flow<T?>
 
-   /**
-    * 数据流，如果数据为空，则调用[factory]创建数据，并根据[save]决定是否保存创建的数据
-    */
-   fun dataFlow(
-      save: Boolean = false,
-      factory: () -> T,
-   ): Flow<T>
-
-   /** 获取数据 */
-   suspend fun get(): T?
-
-   /** 用[data]替换数据 */
-   suspend fun replace(data: T?): T?
-
-   /** 用[transform]替换数据 */
+   /** 用[transform]的结果替换数据 */
    suspend fun replace(transform: suspend (T?) -> T?): T?
-
-   /** 已保存数据不为null，才会调用[transform]更新数据 */
-   suspend fun update(transform: suspend (T) -> T): T?
 }
+
+/** 获取数据 */
+suspend fun <T> DatastoreApi<T>.get(): T?
+
+/** 数据不为null，才会调用[transform]更新数据 */
+suspend fun <T> DatastoreApi<T>.update(transform: suspend (T) -> T): T? 
 ```
