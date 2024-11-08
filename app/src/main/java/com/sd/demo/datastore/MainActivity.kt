@@ -59,6 +59,6 @@ private fun Content(
    }
 }
 
-inline fun logMsg(block: () -> Any?) {
-   Log.i("datastore-demo", block().toString())
+inline fun logMsg(block: () -> String) {
+   Log.i("datastore-demo", block())
 }
