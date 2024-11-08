@@ -58,10 +58,11 @@ class DatastoreTest {
 
    @Test
    fun testDatastore(): Unit = runBlocking {
-      val store = getStore()
-      testReplaceSuccess(store, 1)
-      testReplaceSuccess(store, 2)
-      testReplaceNull(store)
+      with(getStore()) {
+         testReplaceSuccess(1)
+         testReplaceSuccess(2)
+         testReplaceNull()
+      }
    }
 
    @Test
@@ -73,20 +74,25 @@ class DatastoreTest {
          store.update {
             count++
             it.copy(age = 1)
+         }.also { result ->
+            assertEquals(0, count)
+            assertEquals(null, result)
+            assertEquals(null, store.get())
          }
-         assertEquals(null, store.get())
-         assertEquals(0, count)
       }
 
       run {
-         testReplaceSuccess(store, Int.MAX_VALUE)
+         store.testReplaceSuccess(Int.MAX_VALUE)
          var count = 0
          store.update {
             count++
             it.copy(age = 2)
+         }.also { result ->
+            assertEquals(1, count)
+            assertEquals(2, result!!.age)
+            assertEquals(true, store.get() === result)
+            assertEquals(true, store.get() === result)
          }
-         assertEquals(2, store.get()!!.age)
-         assertEquals(1, count)
       }
    }
 
@@ -126,23 +132,21 @@ class DatastoreTest {
 }
 
 private suspend fun getStore(): DatastoreApi<TestModel> {
-   return FDatastore.get(TestModel::class.java).also {
-      testReplaceNull(it)
-   }
+   return FDatastore.get(TestModel::class.java).also { it.testReplaceNull() }
 }
 
-private suspend fun testReplaceNull(store: DatastoreApi<TestModel>) {
-   store.replace { null }.also {
+private suspend fun DatastoreApi<TestModel>.testReplaceNull() {
+   replace { null }.also {
       assertEquals(null, it)
    }
-   assertEquals(null, store.get())
+   assertEquals(null, get())
 }
 
-private suspend fun testReplaceSuccess(store: DatastoreApi<TestModel>, age: Int) {
+private suspend fun DatastoreApi<TestModel>.testReplaceSuccess(age: Int) {
    val data = TestModel(age = age)
-   store.replace { data }.also {
+   replace { data }.also {
       assertEquals(true, it === data)
    }
-   assertEquals(true, store.get() === data)
-   assertEquals(true, store.get() === data)
+   assertEquals(true, get() === data)
+   assertEquals(true, get() === data)
 }
