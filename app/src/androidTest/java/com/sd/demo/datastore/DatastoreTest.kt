@@ -97,7 +97,7 @@ class DatastoreTest {
    }
 
    @Test
-   fun testDataFlow(): Unit = runBlocking {
+   fun testFlow(): Unit = runBlocking {
       with(getStore()) {
          flow.test {
             assertEquals(null, awaitItem())
