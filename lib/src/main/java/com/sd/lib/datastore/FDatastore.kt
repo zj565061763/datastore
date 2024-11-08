@@ -35,7 +35,7 @@ object FDatastore {
     * 获取[clazz]对应的[DatastoreApi]
     */
    @JvmStatic
-   fun <T> api(clazz: Class<T>): DatastoreApi<T> {
+   fun <T> get(clazz: Class<T>): DatastoreApi<T> {
       synchronized(FDatastore) {
          val group = _defaultGroup ?: DatastoreGroup(
             directory = getDirectory().resolve("default"),

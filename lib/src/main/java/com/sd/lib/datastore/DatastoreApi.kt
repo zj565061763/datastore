@@ -9,7 +9,6 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.io.File
@@ -38,20 +37,6 @@ suspend fun <T> DatastoreApi<T>.update(transform: suspend (T) -> T): T? {
          transform(data)
       }
    }
-}
-
-/** 如果数据为null，则调用[factory]创建默认数据，并根据[save]决定是否保存创建的数据 */
-fun <T> DatastoreApi<T>.flowWithDefault(
-   save: Boolean = false,
-   factory: suspend () -> T,
-): Flow<T> {
-   return flow.map { data ->
-      data ?: factory().also { newData ->
-         if (save) {
-            replace { it ?: newData }
-         }
-      }
-   }.distinctUntilChanged()
 }
 
 internal fun <T> DatastoreApi(
