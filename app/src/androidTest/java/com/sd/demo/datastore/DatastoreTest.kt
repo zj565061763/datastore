@@ -132,7 +132,9 @@ private suspend fun getStore(): DatastoreApi<TestModel> {
 }
 
 private suspend fun testReplaceNull(store: DatastoreApi<TestModel>) {
-   store.replace { null }
+   store.replace { null }.also {
+      assertEquals(null, it)
+   }
    assertEquals(null, store.get())
 }
 
