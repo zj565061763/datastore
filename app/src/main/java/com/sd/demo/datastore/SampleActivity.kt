@@ -13,7 +13,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.sd.demo.datastore.theme.AppTheme
 import kotlinx.coroutines.launch
 
@@ -23,12 +22,6 @@ class SampleActivity : ComponentActivity() {
       setContent {
          AppTheme {
             ContentView()
-         }
-      }
-
-      lifecycleScope.launch {
-         UserInfo.flow.collect {
-            logMsg { "dataFlow:$it" }
          }
       }
    }
