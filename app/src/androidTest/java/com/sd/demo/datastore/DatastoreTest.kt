@@ -8,7 +8,7 @@ import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.get
 import com.sd.lib.datastore.update
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,14 +51,14 @@ class DatastoreTest {
    }
 
    @Test
-   fun testGetDatastoreApi() = runBlocking {
+   fun testGetDatastoreApi() = runTest {
       val store1 = getStore()
       val store2 = getStore()
       assertEquals(true, store1 === store2)
    }
 
    @Test
-   fun testDatastore(): Unit = runBlocking {
+   fun testDatastore() = runTest {
       with(getStore()) {
          testReplaceSuccess(1)
          testReplaceSuccess(2)
@@ -67,7 +67,7 @@ class DatastoreTest {
    }
 
    @Test
-   fun testUpdate(): Unit = runBlocking {
+   fun testUpdate() = runTest {
       val store = getStore()
 
       run {
@@ -98,7 +98,7 @@ class DatastoreTest {
    }
 
    @Test
-   fun testFlow(): Unit = runBlocking {
+   fun testFlow() = runTest {
       with(getStore()) {
          flow.test {
             assertEquals(null, awaitItem())
@@ -114,7 +114,7 @@ class DatastoreTest {
    }
 
    @Test
-   fun testCancelInTransform(): Unit = runBlocking {
+   fun testCancelInTransform() = runTest {
       val store = getStore()
       runCatching {
          store.replace { throw CancellationException() }
@@ -124,7 +124,7 @@ class DatastoreTest {
    }
 
    @Test
-   fun testExceptionInTransform(): Unit = runBlocking {
+   fun testExceptionInTransform() = runTest {
       val store = getStore()
       runCatching {
          store.replace { throw TestTransformException() }

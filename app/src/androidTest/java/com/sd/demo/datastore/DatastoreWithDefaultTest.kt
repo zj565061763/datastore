@@ -5,18 +5,18 @@ import com.sd.lib.datastore.DatastoreWithDefaultApi
 import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.get
 import com.sd.lib.datastore.withDefault
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class DatastoreWithDefaultTest {
    @Test
-   fun testGet(): Unit = runBlocking {
+   fun testGet() = runTest {
       assertEquals(TestModel(), getStore().get())
    }
 
    @Test
-   fun testUpdate(): Unit = runBlocking {
+   fun testUpdate() = runTest {
       val store = getStore()
       assertEquals(TestModel(), store.update { it })
 
@@ -27,7 +27,7 @@ class DatastoreWithDefaultTest {
    }
 
    @Test
-   fun testFlow(): Unit = runBlocking {
+   fun testFlow() = runTest {
       with(getStore()) {
          flow.test {
             assertEquals(TestModel(), awaitItem())
