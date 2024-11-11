@@ -117,9 +117,10 @@ class DatastoreTest {
    fun testCancelInTransform() = runTest {
       val store = getStore()
       runCatching {
-         store.replace { throw CancellationException() }
+         store.replace { throw CancellationException("replace cancel") }
       }.let { result ->
          assertEquals(true, result.exceptionOrNull()!! is CancellationException)
+         assertEquals("replace cancel", result.exceptionOrNull()!!.message)
       }
    }
 
@@ -127,9 +128,10 @@ class DatastoreTest {
    fun testExceptionInTransform() = runTest {
       val store = getStore()
       runCatching {
-         store.replace { throw TestTransformException() }
+         store.replace { throw TestTransformException("replace error") }
       }.let { result ->
          assertEquals(true, result.exceptionOrNull() is TestTransformException)
+         assertEquals("replace error", result.exceptionOrNull()!!.message)
       }
    }
 }
@@ -154,4 +156,4 @@ private suspend fun DatastoreApi<TestModel>.testReplaceSuccess(age: Int) {
    assertEquals(true, get() === data)
 }
 
-private class TestTransformException : Throwable()
+private class TestTransformException(override val message: String) : Throwable()
