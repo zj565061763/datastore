@@ -79,12 +79,13 @@ private class DatastoreApiImpl<T>(
             try {
                transform(data)
             } catch (e: Throwable) {
+               if (e is CancellationException) throw e
                throw TransformException(e)
             }
          }
       }.getOrElse { e ->
-         if (e is TransformException) throw e
          if (e is CancellationException) throw e
+         if (e is TransformException) throw e
          onError(
             DatastoreWriteDataException(
                message = "Write data error ${clazz.name}",
