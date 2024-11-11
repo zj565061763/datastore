@@ -122,6 +122,16 @@ class DatastoreTest {
          assertEquals(true, result.exceptionOrNull()!! is CancellationException)
       }
    }
+
+   @Test
+   fun testExceptionInTransform(): Unit = runBlocking {
+      val store = getStore()
+      runCatching {
+         store.replace { throw TestTransformException() }
+      }.let { result ->
+         assertEquals(true, result.exceptionOrNull() is TestTransformException)
+      }
+   }
 }
 
 private suspend fun getStore(): DatastoreApi<TestModel> {
@@ -143,3 +153,5 @@ private suspend fun DatastoreApi<TestModel>.testReplaceSuccess(age: Int) {
    assertEquals(true, get() === data)
    assertEquals(true, get() === data)
 }
+
+private class TestTransformException : Throwable()

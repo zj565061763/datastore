@@ -85,7 +85,7 @@ private class DatastoreApiImpl<T>(
          }
       }.getOrElse { e ->
          if (e is CancellationException) throw e
-         if (e is TransformException) throw e
+         if (e is TransformException) throw e.cause
          onError(
             DatastoreWriteDataException(
                message = "Write data error ${clazz.name}",
@@ -130,4 +130,4 @@ internal data class Model<T>(
    val data: T?,
 )
 
-private class TransformException(cause: Throwable) : Exception(cause)
+private class TransformException(override val cause: Throwable) : Throwable()
