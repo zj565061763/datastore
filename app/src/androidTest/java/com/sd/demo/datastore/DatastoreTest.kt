@@ -7,6 +7,7 @@ import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.get
 import com.sd.lib.datastore.update
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -113,21 +114,13 @@ class DatastoreTest {
    }
 
    @Test
-   fun testNoneNullDataFlow(): Unit = runBlocking {
-//      val store = getStore()
-//      store.flowWithDefault { TestModel(age = 1) }.test {
-//         assertEquals(1, awaitItem().age)
-//         assertEquals(null, store.get())
-//      }
-   }
-
-   @Test
-   fun testNoneNullDataFlowSave(): Unit = runBlocking {
-//      val store = getStore()
-//      store.flowWithDefault(save = true) { TestModel(age = 1) }.test {
-//         assertEquals(1, awaitItem().age)
-//         assertEquals(1, store.get()!!.age)
-//      }
+   fun testCancelInTransform(): Unit = runBlocking {
+      val store = getStore()
+      runCatching {
+         store.replace { throw CancellationException() }
+      }.let { result ->
+         assertEquals(true, result.exceptionOrNull()!! is CancellationException)
+      }
    }
 }
 
