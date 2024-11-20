@@ -10,7 +10,9 @@ data class UserInfo(
    val name: String = "name",
 ) {
    companion object {
-      private val _store = FDatastore.get(UserInfo::class.java).withDefault { UserInfo() }
+      private val _store = FDatastore.get(UserInfo::class.java).withDefault {
+         UserInfo().also { logMsg { "create default user" } }
+      }
 
       val flow = _store.flow
 
