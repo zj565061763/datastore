@@ -34,7 +34,7 @@ private class DatastoreWithDefaultApiImpl<T>(
 
    override val flow: Flow<T>
       get() = store.flow
-         .map { it ?: newData() }
+         .map { it ?: newData(save = true) }
          .distinctUntilChanged()
 
    override suspend fun update(transform: suspend (T) -> T): T {
@@ -44,9 +44,11 @@ private class DatastoreWithDefaultApiImpl<T>(
       } ?: newData()
    }
 
-   private suspend fun newData(): T {
+   private suspend fun newData(save: Boolean = false): T {
       return getDefault().also { data ->
-         store.replace { it ?: data }
+         if (save) {
+            store.replace { it ?: data }
+         }
       }
    }
 }
