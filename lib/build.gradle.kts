@@ -35,6 +35,7 @@ android {
 
 dependencies {
    implementation(libs.androidx.datastore)
+   implementation(libs.androidx.startup)
    implementation(libs.sd.moshi)
 }
 

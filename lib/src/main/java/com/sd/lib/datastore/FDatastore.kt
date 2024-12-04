@@ -2,32 +2,27 @@ package com.sd.lib.datastore
 
 import android.annotation.SuppressLint
 import android.content.Context
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import java.io.File
 
 @SuppressLint("StaticFieldLeak")
 object FDatastore {
+   @Volatile
    private var _context: Context? = null
-   private lateinit var _onError: (DatastoreException) -> Unit
-
    private var _defaultGroup: DatastoreGroup? = null
 
+   private val _scope = MainScope()
+   private val _errorFlow = MutableSharedFlow<DatastoreException>()
+
    /**
-    * 初始化
+    * 默认在主进程自动初始化，其他进程需要手动初始化，初始化方法可以重复调用。
     */
-   @JvmOverloads
    @JvmStatic
-   fun init(
-      context: Context,
-      onError: (DatastoreException) -> Unit = { it.printStackTrace() },
-   ): Boolean {
-      synchronized(FDatastore) {
-         return if (_context == null) {
-            _context = context.applicationContext
-            _onError = onError
-            _context != null
-         } else {
-            false
-         }
+   fun init(context: Context) {
+      context.applicationContext?.also { appContext ->
+         _context = appContext
       }
    }
 
@@ -39,9 +34,15 @@ object FDatastore {
       synchronized(FDatastore) {
          val group = _defaultGroup ?: DatastoreGroup(
             directory = getDirectory().resolve("default"),
-            onError = _onError,
+            onError = ::notifyError,
          ).also { _defaultGroup = it }
          return group.api(clazz)
+      }
+   }
+
+   private fun notifyError(error: DatastoreException) {
+      _scope.launch {
+         _errorFlow.emit(error)
       }
    }
 

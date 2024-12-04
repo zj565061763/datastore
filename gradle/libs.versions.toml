@@ -34,6 +34,7 @@ kotlinx-coroutines-test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1"
 cash-turbine = "app.cash.turbine:turbine:1.1.0"
 
 androidx-datastore = "androidx.datastore:datastore-preferences:1.1.1"
+androidx-startup = "androidx.startup:startup-runtime:1.1.1"
 sd-moshi = "com.github.zj565061763:moshi:1.0.0"
 
 [plugins]
