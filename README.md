@@ -66,7 +66,7 @@ suspend fun <T> DatastoreApi<T>.update(transform: suspend (T) -> T): T?
 
 ```kotlin
 // 把一个api转为具有默认值的api
-val api = FDatastore.get(UserInfo::class.java).withDefault { UserInfo() }
+val api: DatastoreWithDefaultApi<UserInfo> = FDatastore.get(UserInfo::class.java).withDefault { UserInfo() }
 ```
 
 ```kotlin
