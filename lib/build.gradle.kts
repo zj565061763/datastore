@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "datastore"
-val libVersion = "1.2.3"
+val libVersion = "1.2.4"
 
 android {
    namespace = "com.sd.lib.datastore"
