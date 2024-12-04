@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,7 +23,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SampleActivity" />
+        <activity android:name=".Sample" />
+
+        <activity
+            android:name=".SampleProcess"
+            android:process=":test" />
 
     </application>
 

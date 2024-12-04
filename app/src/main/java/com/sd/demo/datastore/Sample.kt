@@ -16,7 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sd.demo.datastore.theme.AppTheme
 import kotlinx.coroutines.launch
 
-class SampleActivity : ComponentActivity() {
+open class Sample : ComponentActivity() {
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContent {
