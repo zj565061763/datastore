@@ -9,12 +9,20 @@
 ### 初始化
 
 ```kotlin
-FDatastore.init(
-   context = this,
-   onError = {
-      // 错误回调
+class App : Application() {
+   override fun onCreate() {
+      super.onCreate()
+      // 默认在主进程自动初始化，其他进程需要手动初始化，初始化方法可以重复调用。
+      FDatastore.init(this)
+
+      // 监听错误信息
+      GlobalScope.launch {
+         FDatastore.errorFlow.collect {
+            logMsg { "error:${it.stackTraceToString()}" }
+         }
+      }
    }
-)
+}
 ```
 
 ### 数据对象
@@ -31,13 +39,12 @@ data class UserInfo(
 * 使用`DatastoreType`注解标注类，注解中的`id`必须全局唯一
 * 建议给所有属性设置默认值，App版本升级时，新增的字段在旧版本上不存在，会使用默认值
 
-### 获取Api
+### 使用Api
 
 ```kotlin
-val datastoreApi: DatastoreApi<UserInfo> = FDatastore.get(UserInfo::class.java)
+// 获取api
+val api: DatastoreApi<UserInfo> = FDatastore.get(UserInfo::class.java)
 ```
-
-### 使用Api
 
 ```kotlin
 interface DatastoreApi<T> {
@@ -53,4 +60,24 @@ suspend fun <T> DatastoreApi<T>.get(): T?
 
 /** 数据不为null，才会调用[transform]更新数据 */
 suspend fun <T> DatastoreApi<T>.update(transform: suspend (T) -> T): T? 
+```
+
+### 有默认值的Api
+
+```kotlin
+// 把一个api转为具有默认值的api
+val api = FDatastore.get(UserInfo::class.java).withDefault { UserInfo() }
+```
+
+```kotlin
+interface DatastoreWithDefaultApi<T> {
+   /** 数据流 */
+   val flow: Flow<T>
+
+   /** 用[transform]的结果替换数据 */
+   suspend fun update(transform: suspend (T) -> T): T
+}
+
+/** 获取数据 */
+suspend fun <T> DatastoreWithDefaultApi<T>.get(): T
 ```
