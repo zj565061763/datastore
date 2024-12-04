@@ -38,11 +38,16 @@ object FDatastore {
    @JvmStatic
    fun <T> get(clazz: Class<T>): DatastoreApi<T> {
       synchronized(FDatastore) {
-         val group = _defaultGroup ?: DatastoreGroup(
-            directory = getDirectory().resolve("default"),
-            onError = ::notifyError,
-         ).also { _defaultGroup = it }
-         return group.api(clazz)
+         return getDefaultGroup().get(clazz)
+      }
+   }
+
+   private fun getDefaultGroup(): DatastoreGroup {
+      return _defaultGroup ?: DatastoreGroup(
+         directory = getDirectory().resolve("default"),
+         onError = ::notifyError,
+      ).also {
+         _defaultGroup = it
       }
    }
 

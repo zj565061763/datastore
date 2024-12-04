@@ -5,7 +5,7 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 internal interface DatastoreGroup {
-   fun <T> api(clazz: Class<T>): DatastoreApi<T>
+   fun <T> get(clazz: Class<T>): DatastoreApi<T>
 }
 
 internal fun DatastoreGroup(
@@ -25,7 +25,7 @@ private class DatastoreGroupImpl(
 
    private val _holder: MutableMap<String, ApiInfo<*>> = mutableMapOf()
 
-   override fun <T> api(clazz: Class<T>): DatastoreApi<T> {
+   override fun <T> get(clazz: Class<T>): DatastoreApi<T> {
       val datastoreType = requireNotNull(clazz.getAnnotation(DatastoreType::class.java)) {
          "Annotation ${DatastoreType::class.java.simpleName} was not found in ${clazz.name}"
       }
