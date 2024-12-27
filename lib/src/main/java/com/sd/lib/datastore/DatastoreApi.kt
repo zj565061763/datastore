@@ -56,7 +56,7 @@ private class DatastoreApiImpl<T>(
   private val clazz: Class<T>,
   private val onError: (DatastoreException) -> Unit,
 ) : DatastoreApi<T> {
-  private val _serializer = ModelSerializer<T>()
+  private val _serializer = ModelSerializer(clazz, onError)
   private val _datastore: DataStore<Model<T>> = MultiProcessDataStoreFactory.create(
     serializer = _serializer,
     corruptionHandler = ReplaceFileCorruptionHandler { _serializer.defaultValue },
@@ -96,32 +96,37 @@ private class DatastoreApiImpl<T>(
     }
   }
 
-  private inner class ModelSerializer<T> : Serializer<Model<T>> {
-    private val _jsonAdapter: JsonAdapter<Model<T>> = fMoshi.adapter(
-      Types.newParameterizedType(Model::class.java, clazz)
-    )
+  private class TransformException(override val cause: Throwable) : Throwable()
+}
 
-    override val defaultValue: Model<T> = Model(data = null)
+private class ModelSerializer<T>(
+  private val clazz: Class<T>,
+  private val onError: (DatastoreException) -> Unit,
+) : Serializer<Model<T>> {
+  private val _jsonAdapter: JsonAdapter<Model<T>> = fMoshi.adapter(
+    Types.newParameterizedType(Model::class.java, clazz)
+  )
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun writeTo(t: Model<T>, output: OutputStream) {
-      val json = _jsonAdapter.toJson(t)
-      output.write(json.toByteArray())
-    }
+  override val defaultValue: Model<T> = Model(data = null)
 
-    override suspend fun readFrom(input: InputStream): Model<T> {
-      return runCatching {
-        val json = input.readBytes().decodeToString()
-        checkNotNull(_jsonAdapter.fromJson(json))
-      }.getOrElse { e ->
-        onError(
-          DatastoreReadDataException(
-            message = "Read data error ${clazz.name}",
-            cause = e,
-          )
+  @Suppress("BlockingMethodInNonBlockingContext")
+  override suspend fun writeTo(t: Model<T>, output: OutputStream) {
+    val json = _jsonAdapter.toJson(t)
+    output.write(json.toByteArray())
+  }
+
+  override suspend fun readFrom(input: InputStream): Model<T> {
+    return runCatching {
+      val json = input.readBytes().decodeToString()
+      checkNotNull(_jsonAdapter.fromJson(json))
+    }.getOrElse { e ->
+      onError(
+        DatastoreReadDataException(
+          message = "Read data error ${clazz.name}",
+          cause = e,
         )
-        defaultValue
-      }
+      )
+      defaultValue
     }
   }
 }
@@ -129,5 +134,3 @@ private class DatastoreApiImpl<T>(
 internal data class Model<T>(
   val data: T?,
 )
-
-private class TransformException(override val cause: Throwable) : Throwable()
