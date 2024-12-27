@@ -52,7 +52,7 @@ private class DatastoreGroupImpl(
   }
 
   private fun directoryOf(id: String): File {
-    val dir = runCatching { fMd5(id.toByteArray()) }.getOrDefault(id)
+    val dir = runCatching { fMd5(id.toByteArray()) }.getOrElse { id }
     return directory.resolve(dir)
   }
 
