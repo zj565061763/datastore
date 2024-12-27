@@ -42,7 +42,7 @@ class DatastoreTest {
     FDatastore.get(TestModelSameId1::class.java)
     runCatching {
       FDatastore.get(TestModelSameId2::class.java)
-    }.let { result ->
+    }.also { result ->
       assertEquals(
         "id:SameId has bound to ${TestModelSameId1::class.java.name} when bind ${TestModelSameId2::class.java.name}",
         result.exceptionOrNull()!!.message
@@ -118,7 +118,7 @@ class DatastoreTest {
     val store = getStore()
     runCatching {
       store.replace { throw CancellationException("replace cancel") }
-    }.let { result ->
+    }.also { result ->
       assertEquals(true, result.exceptionOrNull()!! is CancellationException)
       assertEquals("replace cancel", result.exceptionOrNull()!!.message)
     }
@@ -129,7 +129,7 @@ class DatastoreTest {
     val store = getStore()
     runCatching {
       store.replace { throw TestTransformException("replace error") }
-    }.let { result ->
+    }.also { result ->
       assertEquals(true, result.exceptionOrNull() is TestTransformException)
       assertEquals("replace error", result.exceptionOrNull()!!.message)
     }
