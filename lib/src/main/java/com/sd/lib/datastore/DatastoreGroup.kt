@@ -22,7 +22,6 @@ private class DatastoreGroupImpl(
   private val directory: File,
   private val onError: (DatastoreException) -> Unit,
 ) : DatastoreGroup {
-
   private val _holder: MutableMap<String, ApiInfo<*>> = mutableMapOf()
 
   override fun <T> get(clazz: Class<T>): DatastoreApi<T> {
@@ -34,10 +33,13 @@ private class DatastoreGroupImpl(
       throw IllegalArgumentException("DatastoreType.id is empty in ${clazz.name}")
     }
 
-    _holder[id]?.let { info ->
-      if (info.clazz != clazz) error("id:${id} has bound to ${info.clazz.name} when bind ${clazz.name}")
-      @Suppress("UNCHECKED_CAST")
-      return info.api as DatastoreApi<T>
+    _holder[id]?.also { info ->
+      if (info.clazz == clazz) {
+        @Suppress("UNCHECKED_CAST")
+        return info.api as DatastoreApi<T>
+      } else {
+        throw IllegalArgumentException("id:${id} has bound to ${info.clazz.name} when bind ${clazz.name}")
+      }
     }
 
     return DatastoreApi(
