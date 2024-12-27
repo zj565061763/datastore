@@ -30,8 +30,8 @@ class App : Application() {
 ```kotlin
 @DatastoreType(id = "UserInfo")
 data class UserInfo(
-   val age: Int = 0,
-   val name: String = "name",
+  val age: Int = 0,
+  val name: String = "name",
 )
 ```
 
