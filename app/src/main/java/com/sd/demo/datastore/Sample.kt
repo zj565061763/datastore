@@ -17,43 +17,43 @@ import com.sd.demo.datastore.theme.AppTheme
 import kotlinx.coroutines.launch
 
 open class Sample : ComponentActivity() {
-   override fun onCreate(savedInstanceState: Bundle?) {
-      super.onCreate(savedInstanceState)
-      setContent {
-         AppTheme {
-            ContentView()
-         }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        ContentView()
       }
-   }
+    }
+  }
 }
 
 @Composable
 private fun ContentView(
-   modifier: Modifier = Modifier,
+  modifier: Modifier = Modifier,
 ) {
-   val user by UserInfo.flow.collectAsStateWithLifecycle(initialValue = null)
-   val scope = rememberCoroutineScope()
+  val user by UserInfo.flow.collectAsStateWithLifecycle(initialValue = null)
+  val scope = rememberCoroutineScope()
 
-   Column(
-      modifier = modifier.fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
-   ) {
-      Button(onClick = {
-         scope.launch {
-            UserInfo.increment()
-         }
-      }) {
-         Text(text = "+")
+  Column(
+    modifier = modifier.fillMaxSize(),
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    Button(onClick = {
+      scope.launch {
+        UserInfo.increment()
       }
+    }) {
+      Text(text = "+")
+    }
 
-      Button(onClick = {
-         scope.launch {
-            UserInfo.decrement()
-         }
-      }) {
-         Text(text = "-")
+    Button(onClick = {
+      scope.launch {
+        UserInfo.decrement()
       }
+    }) {
+      Text(text = "-")
+    }
 
-      Text(text = user?.age.toString())
-   }
+    Text(text = user?.age.toString())
+  }
 }

@@ -6,26 +6,26 @@ import com.sd.lib.datastore.withDefault
 
 @DatastoreType("UserInfo")
 data class UserInfo(
-   val age: Int = 0,
-   val name: String = "name",
+  val age: Int = 0,
+  val name: String = "name",
 ) {
-   companion object {
-      private val _store = FDatastore.get(UserInfo::class.java).withDefault {
-         UserInfo().also { logMsg { "create default user" } }
-      }
+  companion object {
+    private val _store = FDatastore.get(UserInfo::class.java).withDefault {
+      UserInfo().also { logMsg { "create default user" } }
+    }
 
-      val flow = _store.flow
+    val flow = _store.flow
 
-      suspend fun increment() {
-         _store.update {
-            it.copy(age = it.age + 1)
-         }
+    suspend fun increment() {
+      _store.update {
+        it.copy(age = it.age + 1)
       }
+    }
 
-      suspend fun decrement() {
-         _store.update {
-            it.copy(age = it.age - 1)
-         }
+    suspend fun decrement() {
+      _store.update {
+        it.copy(age = it.age - 1)
       }
-   }
+    }
+  }
 }
