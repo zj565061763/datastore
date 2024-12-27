@@ -43,7 +43,7 @@ private class DatastoreGroupImpl(
     }
 
     return DatastoreApi(
-      file = directoryOfID(id).resolve("default"),
+      file = directoryOf(id).resolve("default"),
       clazz = clazz,
       onError = onError,
     ).also { api ->
@@ -51,8 +51,7 @@ private class DatastoreGroupImpl(
     }
   }
 
-  private fun directoryOfID(id: String): File {
-    require(id.isNotEmpty()) { "id is empty" }
+  private fun directoryOf(id: String): File {
     val dir = runCatching { fMd5(id.toByteArray()) }.getOrDefault(id)
     return directory.resolve(dir)
   }
