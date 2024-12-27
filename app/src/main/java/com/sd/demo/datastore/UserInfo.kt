@@ -3,6 +3,7 @@ package com.sd.demo.datastore
 import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.withDefault
+import kotlinx.coroutines.flow.Flow
 
 @DatastoreType("UserInfo")
 data class UserInfo(
@@ -14,7 +15,8 @@ data class UserInfo(
       UserInfo().also { logMsg { "create default user" } }
     }
 
-    val flow = _store.flow
+    val flow: Flow<UserInfo>
+      get() = _store.flow
 
     suspend fun increment() {
       _store.update {
