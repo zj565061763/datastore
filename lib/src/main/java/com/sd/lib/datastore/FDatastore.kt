@@ -26,8 +26,8 @@ object FDatastore {
    * 默认在主进程自动初始化，其他进程需要手动初始化，初始化方法可以重复调用。
    */
   @JvmStatic
-  fun init(context: Context) {
-    context.applicationContext?.also { appContext ->
+  fun init(context: Context?) {
+    context?.applicationContext?.also { appContext ->
       _context = appContext
     }
   }
