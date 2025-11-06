@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.map
 
 fun <T> DatastoreApi<T>.withDefault(
   getDefault: suspend () -> T,
-): DatastoreWithDefaultApi<T> {
-  return DatastoreWithDefaultApiImpl(
+): DatastoreApiWithDefault<T> {
+  return DatastoreApiWithDefaultImpl(
     store = this,
     getDefault = getDefault,
   )
 }
 
-interface DatastoreWithDefaultApi<T> {
+interface DatastoreApiWithDefault<T> {
   /** 数据流 */
   val flow: Flow<T>
 
@@ -23,14 +23,14 @@ interface DatastoreWithDefaultApi<T> {
 }
 
 /** 获取数据 */
-suspend fun <T> DatastoreWithDefaultApi<T>.get(): T {
+suspend fun <T> DatastoreApiWithDefault<T>.get(): T {
   return flow.first()
 }
 
-private class DatastoreWithDefaultApiImpl<T>(
+private class DatastoreApiWithDefaultImpl<T>(
   private val store: DatastoreApi<T>,
   private val getDefault: suspend () -> T,
-) : DatastoreWithDefaultApi<T> {
+) : DatastoreApiWithDefault<T> {
 
   override val flow: Flow<T>
     get() = store.flow

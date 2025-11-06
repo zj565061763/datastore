@@ -1,7 +1,7 @@
 package com.sd.demo.datastore
 
 import app.cash.turbine.test
-import com.sd.lib.datastore.DatastoreWithDefaultApi
+import com.sd.lib.datastore.DatastoreApiWithDefault
 import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.get
 import com.sd.lib.datastore.withDefault
@@ -43,7 +43,7 @@ class DatastoreWithDefaultTest {
   }
 }
 
-private suspend fun getStore(): DatastoreWithDefaultApi<TestModel> {
+private suspend fun getStore(): DatastoreApiWithDefault<TestModel> {
   return FDatastore.get(TestModel::class.java)
     .also { it.replace { null } }
     .withDefault { TestModel() }
