@@ -10,18 +10,18 @@
 
 ```kotlin
 class App : Application() {
-   override fun onCreate() {
-      super.onCreate()
-      // 默认在主进程自动初始化，其他进程需要手动初始化，初始化方法可以重复调用。
-      FDatastore.init(this)
+  override fun onCreate() {
+    super.onCreate()
+    // 默认在主进程自动初始化，其他进程需要手动初始化，初始化方法可以重复调用。
+    FDatastore.init(this)
 
-      // 监听错误信息
-      GlobalScope.launch {
-         FDatastore.errorFlow.collect {
-            logMsg { "error:${it.stackTraceToString()}" }
-         }
+    // 监听错误信息
+    GlobalScope.launch {
+      FDatastore.errorFlow.collect {
+        logMsg { "error:${it.stackTraceToString()}" }
       }
-   }
+    }
+  }
 }
 ```
 
@@ -48,11 +48,11 @@ val api: DatastoreApi<UserInfo> = FDatastore.get(UserInfo::class.java)
 
 ```kotlin
 interface DatastoreApi<T> {
-   /** 数据流 */
-   val flow: Flow<T?>
+  /** 数据流 */
+  val flow: Flow<T?>
 
-   /** 用[transform]的结果替换数据 */
-   suspend fun replace(transform: suspend (T?) -> T?): T?
+  /** 用[transform]的结果替换数据 */
+  suspend fun replace(transform: suspend (T?) -> T?): T?
 }
 
 /** 获取数据 */
@@ -71,11 +71,11 @@ val api: DatastoreApiWithDefault<UserInfo> = FDatastore.get(UserInfo::class.java
 
 ```kotlin
 interface DatastoreApiWithDefault<T> {
-   /** 数据流 */
-   val flow: Flow<T>
+  /** 数据流 */
+  val flow: Flow<T>
 
-   /** 用[transform]的结果替换数据 */
-   suspend fun update(transform: suspend (T) -> T): T
+  /** 用[transform]的结果替换数据 */
+  suspend fun update(transform: suspend (T) -> T): T
 }
 
 /** 获取数据 */
