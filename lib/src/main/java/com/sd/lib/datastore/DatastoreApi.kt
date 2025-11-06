@@ -116,16 +116,18 @@ private class ModelSerializer<T>(
   }
 
   override suspend fun readFrom(input: InputStream): Model<T> {
+    val json = runCatching { input.readBytes().decodeToString() }
+      .onFailure { e -> onError(DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)) }
+      .getOrNull()
+
+    if (json.isNullOrEmpty()) {
+      return defaultValue
+    }
+
     return runCatching {
-      val json = input.readBytes().decodeToString()
       checkNotNull(_jsonAdapter.fromJson(json))
     }.getOrElse { e ->
-      onError(
-        DatastoreReadDataException(
-          message = "Read data error ${clazz.name}",
-          cause = e,
-        )
-      )
+      onError(DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e))
       defaultValue
     }
   }
