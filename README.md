@@ -1,4 +1,10 @@
-[![](https://jitpack.io/v/zj565061763/datastore.svg)](https://jitpack.io/#zj565061763/datastore)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.zj565061763.android/datastore)](https://central.sonatype.com/search?q=g:io.github.zj565061763.android+datastore)
+
+# Gradle
+
+```kotlin
+implementation("io.github.zj565061763.android:datastore:$version")
+```
 
 # About
 
