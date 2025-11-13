@@ -51,9 +51,7 @@ private fun Content(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     items(listActivity) { item ->
-      Button(
-        onClick = { onClickActivity(item) }
-      ) {
+      Button(onClick = { onClickActivity(item) }) {
         Text(text = item.simpleName)
       }
     }
@@ -61,5 +59,5 @@ private fun Content(
 }
 
 inline fun logMsg(block: () -> String) {
-  Log.i("datastore-demo", block())
+  Log.i("sd-demo", block())
 }
