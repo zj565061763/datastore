@@ -22,23 +22,12 @@ interface DatastoreApi<T> {
   /** 数据流 */
   val flow: Flow<T?>
 
-  /** 用[transform]的结果替换数据 */
-  suspend fun replace(transform: suspend (T?) -> T?): T?
+  /** 更新数据 */
+  suspend fun update(transform: suspend (T?) -> T?)
 }
 
 /** 获取数据 */
 suspend fun <T> DatastoreApi<T>.get(): T? = flow.first()
-
-/** 数据存在，才会调用[transform]更新数据 */
-suspend fun <T> DatastoreApi<T>.update(transform: suspend (T) -> T?): T? {
-  return replace { data ->
-    if (data == null) {
-      null
-    } else {
-      transform(data)
-    }
-  }
-}
 
 internal fun <T> DatastoreApi(
   file: File,
@@ -67,15 +56,15 @@ private class DatastoreApiImpl<T>(
   override val flow: Flow<T?>
     get() = _datastore.data.map { it.data }
 
-  override suspend fun replace(transform: suspend (T?) -> T?): T? {
-    return updateData { model ->
+  override suspend fun update(transform: suspend (T?) -> T?) {
+    updateData { model ->
       val newData = transform(model.data)
       model.copy(data = newData)
-    }?.data
+    }
   }
 
-  private suspend fun updateData(transform: suspend (Model<T>) -> Model<T>): Model<T>? {
-    return runCatching {
+  private suspend fun updateData(transform: suspend (Model<T>) -> Model<T>) {
+    runCatching {
       _datastore.updateData { data ->
         try {
           transform(data)
@@ -84,11 +73,10 @@ private class DatastoreApiImpl<T>(
           throw TransformException(e)
         }
       }
-    }.getOrElse { e ->
+    }.onFailure { e ->
       if (e is CancellationException) throw e
       if (e is TransformException) throw e.cause
       onError(DatastoreWriteDataException(message = "Write data error ${clazz.name}", cause = e))
-      null
     }
   }
 

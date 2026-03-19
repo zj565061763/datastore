@@ -10,7 +10,7 @@ android {
   namespace = "com.sd.lib.datastore"
   compileSdk = libs.versions.androidCompileSdk.get().toInt()
   defaultConfig {
-    minSdk = 21
+    minSdk = 23
     consumerProguardFiles("consumer-rules.pro")
   }
 
@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-  api(libs.androidx.datastore.preferences)
+  implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.startup)
   implementation(libs.sd.moshi)
 }

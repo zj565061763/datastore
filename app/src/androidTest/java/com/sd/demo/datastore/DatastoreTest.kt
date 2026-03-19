@@ -6,7 +6,6 @@ import com.sd.lib.datastore.DatastoreApi
 import com.sd.lib.datastore.DatastoreType
 import com.sd.lib.datastore.FDatastore
 import com.sd.lib.datastore.get
-import com.sd.lib.datastore.update
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -60,40 +59,9 @@ class DatastoreTest {
   @Test
   fun testDatastore() = runTest {
     with(getStore()) {
-      testReplaceSuccess(1)
-      testReplaceSuccess(2)
-      testReplaceNull()
-    }
-  }
-
-  @Test
-  fun testUpdate() = runTest {
-    val store = getStore()
-
-    run {
-      var count = 0
-      store.update {
-        count++
-        it.copy(age = 1)
-      }.also { result ->
-        assertEquals(0, count)
-        assertEquals(null, result)
-        assertEquals(null, store.get())
-      }
-    }
-
-    run {
-      store.testReplaceSuccess(Int.MAX_VALUE)
-      var count = 0
-      store.update {
-        count++
-        it.copy(age = 2)
-      }.also { result ->
-        assertEquals(1, count)
-        assertEquals(2, result!!.age)
-        assertEquals(true, store.get() === result)
-        assertEquals(true, store.get() === result)
-      }
+      testUpdateSuccess(1)
+      testUpdateSuccess(2)
+      testUpdateNull()
     }
   }
 
@@ -103,11 +71,11 @@ class DatastoreTest {
       flow.test {
         assertEquals(null, awaitItem())
 
-        replace { TestModel(age = 1) }
-        replace { TestModel(age = 1) }
+        update { TestModel(age = 1) }
+        update { TestModel(age = 1) }
         assertEquals(1, awaitItem()!!.age)
 
-        update { it.copy(age = 2) }
+        update { it?.copy(age = 2) }
         assertEquals(2, awaitItem()!!.age)
       }
     }
@@ -117,10 +85,10 @@ class DatastoreTest {
   fun testCancelInTransform() = runTest {
     val store = getStore()
     runCatching {
-      store.replace { throw CancellationException("replace cancel") }
+      store.update { throw CancellationException("update cancel") }
     }.also { result ->
       assertEquals(true, result.exceptionOrNull()!! is CancellationException)
-      assertEquals("replace cancel", result.exceptionOrNull()!!.message)
+      assertEquals("update cancel", result.exceptionOrNull()!!.message)
     }
   }
 
@@ -128,30 +96,26 @@ class DatastoreTest {
   fun testExceptionInTransform() = runTest {
     val store = getStore()
     runCatching {
-      store.replace { throw TestTransformException("replace error") }
+      store.update { throw TestTransformException("update error") }
     }.also { result ->
       assertEquals(true, result.exceptionOrNull() is TestTransformException)
-      assertEquals("replace error", result.exceptionOrNull()!!.message)
+      assertEquals("update error", result.exceptionOrNull()!!.message)
     }
   }
 }
 
 private suspend fun getStore(): DatastoreApi<TestModel> {
-  return FDatastore.get(TestModel::class.java).also { it.testReplaceNull() }
+  return FDatastore.get(TestModel::class.java).also { it.testUpdateNull() }
 }
 
-private suspend fun DatastoreApi<TestModel>.testReplaceNull() {
-  replace { null }.also {
-    assertEquals(null, it)
-  }
+private suspend fun DatastoreApi<TestModel>.testUpdateNull() {
+  update { null }
   assertEquals(null, get())
 }
 
-private suspend fun DatastoreApi<TestModel>.testReplaceSuccess(age: Int) {
+private suspend fun DatastoreApi<TestModel>.testUpdateSuccess(age: Int) {
   val data = TestModel(age = age)
-  replace { data }.also {
-    assertEquals(true, it === data)
-  }
+  update { data }
   assertEquals(true, get() === data)
   assertEquals(true, get() === data)
 }

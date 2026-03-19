@@ -12,18 +12,16 @@ import org.junit.Test
 class DatastoreWithDefaultTest {
   @Test
   fun testGet() = runTest {
-    assertEquals(TestModel(), getStore().get())
+    val store = getStore()
+    assertEquals(TestModel(), store.get())
   }
 
   @Test
   fun testUpdate() = runTest {
     val store = getStore()
-    assertEquals(TestModel(), store.update { it })
-
     val model = TestModel(age = 1)
-    store.update { model }.also { result ->
-      assertEquals(true, result === model)
-    }
+    store.update { model }
+    assertEquals(model, store.get())
   }
 
   @Test
@@ -45,6 +43,6 @@ class DatastoreWithDefaultTest {
 
 private suspend fun getStore(): DatastoreApiWithDefault<TestModel> {
   return FDatastore.get(TestModel::class.java)
-    .also { it.replace { null } }
+    .also { it.update { null } }
     .withDefault { TestModel() }
 }
