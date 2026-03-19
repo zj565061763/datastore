@@ -24,12 +24,10 @@ interface DatastoreApi<T> {
 }
 
 /** 获取数据 */
-suspend fun <T> DatastoreApi<T>.get(): T? {
-  return flow.first()
-}
+suspend fun <T> DatastoreApi<T>.get(): T? = flow.first()
 
-/** 数据不为null，才会调用[transform]更新数据 */
-suspend fun <T> DatastoreApi<T>.update(transform: suspend (T) -> T): T? {
+/** 数据存在，才会调用[transform]更新数据 */
+suspend fun <T> DatastoreApi<T>.update(transform: suspend (T) -> T?): T? {
   return replace { data ->
     if (data == null) {
       null
