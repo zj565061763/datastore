@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okio.buffer
 import okio.sink
+import okio.source
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -111,16 +112,9 @@ private class ModelSerializer<T>(
   }
 
   override suspend fun readFrom(input: InputStream): Model<T> {
-    val json = runCatching { input.readBytes().decodeToString() }
-      .onFailure { e -> onError(DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)) }
-      .getOrNull()
-
-    if (json.isNullOrEmpty()) {
-      return defaultValue
-    }
-
     return runCatching {
-      checkNotNull(_jsonAdapter.fromJson(json))
+      val source = input.source().buffer()
+      _jsonAdapter.fromJson(source) ?: defaultValue
     }.getOrElse { e ->
       onError(DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e))
       defaultValue
