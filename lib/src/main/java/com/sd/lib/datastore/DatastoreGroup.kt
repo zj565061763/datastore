@@ -2,7 +2,6 @@ package com.sd.lib.datastore
 
 import java.io.File
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 
 internal class DatastoreGroup(
   private val directory: File,
@@ -38,7 +37,7 @@ internal class DatastoreGroup(
   }
 
   private fun directoryOf(id: String): File {
-    val dir = runCatching { fMd5(id.toByteArray()) }.getOrElse { id }
+    val dir = runCatching { md5(id) }.getOrElse { id }
     return directory.resolve(dir)
   }
 
@@ -48,9 +47,8 @@ internal class DatastoreGroup(
   )
 }
 
-@Throws(NoSuchAlgorithmException::class)
-private fun fMd5(input: ByteArray): String {
-  val md5Bytes = MessageDigest.getInstance("MD5").digest(input)
+private fun md5(input: String): String {
+  val md5Bytes = MessageDigest.getInstance("MD5").digest(input.toByteArray())
   return buildString {
     for (byte in md5Bytes) {
       val hex = (0xff and byte.toInt()).toString(16)
