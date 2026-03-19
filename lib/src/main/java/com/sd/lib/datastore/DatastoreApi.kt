@@ -11,6 +11,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import okio.buffer
+import okio.sink
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -102,10 +104,10 @@ private class ModelSerializer<T>(
 
   override val defaultValue: Model<T> = Model(data = null)
 
-  @Suppress("BlockingMethodInNonBlockingContext")
   override suspend fun writeTo(t: Model<T>, output: OutputStream) {
-    val json = _jsonAdapter.toJson(t)
-    output.write(json.toByteArray())
+    val sink = output.sink().buffer()
+    _jsonAdapter.toJson(sink, t)
+    sink.flush()
   }
 
   override suspend fun readFrom(input: InputStream): Model<T> {
