@@ -84,12 +84,7 @@ private class DatastoreApiImpl<T>(
     }.getOrElse { e ->
       if (e is CancellationException) throw e
       if (e is TransformException) throw e.cause
-      onError(
-        DatastoreWriteDataException(
-          message = "Write data error ${clazz.name}",
-          cause = e,
-        )
-      )
+      onError(DatastoreWriteDataException(message = "Write data error ${clazz.name}", cause = e))
       null
     }
   }
