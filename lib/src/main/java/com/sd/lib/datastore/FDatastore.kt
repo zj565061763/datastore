@@ -45,22 +45,12 @@ object FDatastore {
   private fun getDefaultGroup(): DatastoreGroup {
     return _defaultGroup ?: DatastoreGroup(
       directory = getDirectory().resolve("default"),
-      onError = ::notifyError,
-    ).also {
-      _defaultGroup = it
-    }
+      onError = { error -> _scope.launch { _errorFlow.emit(error) } },
+    ).also { _defaultGroup = it }
   }
 
-  private fun notifyError(error: DatastoreException) {
-    _scope.launch {
-      _errorFlow.emit(error)
-    }
-  }
-
-  @SuppressLint("SdCardPath")
   private fun getDirectory(): File {
     val context = _context ?: error("FDatastore.init() should be called before this.")
-    val filesDir = context.filesDir ?: File("/data/data/${context.packageName}/files")
-    return filesDir.resolve("sd.lib.datastore")
+    return context.filesDir.resolve("sd.lib.datastore")
   }
 }
