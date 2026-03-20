@@ -5,7 +5,6 @@ import java.security.MessageDigest
 
 internal class DatastoreGroup(
   private val directory: File,
-  private val onError: (DatastoreException) -> Unit,
 ) {
   private val _holder: MutableMap<String, ApiInfo<*>> = mutableMapOf()
 
@@ -30,7 +29,6 @@ internal class DatastoreGroup(
     return DatastoreApi(
       file = directoryOf(id).resolve("default"),
       clazz = clazz,
-      onError = onError,
     ).also { api ->
       _holder[id] = ApiInfo(clazz, api)
     }

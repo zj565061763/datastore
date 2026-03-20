@@ -18,11 +18,16 @@ import java.io.InputStream
 import java.io.OutputStream
 
 interface DatastoreApi<T> {
-  /** 数据流 */
+  /**
+   * 数据流
+   * @throws DatastoreReadDataException 当数据读取异常时
+   */
   val flow: Flow<T?>
 
-  /** 更新数据 */
-  @Throws(DatastoreWriteDataException::class)
+  /**
+   * 更新数据
+   * @throws DatastoreWriteDataException 当数据写入异常时
+   */
   suspend fun update(transform: suspend (T?) -> T?)
 }
 
@@ -32,21 +37,15 @@ suspend fun <T> DatastoreApi<T>.get(): T? = flow.first()
 internal fun <T> DatastoreApi(
   file: File,
   clazz: Class<T>,
-  onError: (DatastoreException) -> Unit,
 ): DatastoreApi<T> {
-  return DatastoreApiImpl(
-    file = file,
-    clazz = clazz,
-    onError = onError,
-  )
+  return DatastoreApiImpl(file = file, clazz = clazz)
 }
 
 private class DatastoreApiImpl<T>(
   file: File,
   private val clazz: Class<T>,
-  private val onError: (DatastoreException) -> Unit,
 ) : DatastoreApi<T> {
-  private val _serializer = ModelSerializer(clazz, onError)
+  private val _serializer = ModelSerializer(clazz)
   private val _datastore: DataStore<Model<T>> = MultiProcessDataStoreFactory.create(
     serializer = _serializer,
     corruptionHandler = ReplaceFileCorruptionHandler { _serializer.defaultValue },
@@ -63,7 +62,6 @@ private class DatastoreApiImpl<T>(
     }
   }
 
-  @Throws(DatastoreWriteDataException::class)
   private suspend fun updateData(transform: suspend (Model<T>) -> Model<T>) {
     runCatching {
       _datastore.updateData { data ->
@@ -81,7 +79,6 @@ private class DatastoreApiImpl<T>(
 
 private class ModelSerializer<T>(
   private val clazz: Class<T>,
-  private val onError: (DatastoreException) -> Unit,
 ) : Serializer<Model<T>> {
   private val _jsonAdapter: JsonAdapter<Model<T>> = fMoshi.adapter(
     Types.newParameterizedType(Model::class.java, clazz)
@@ -89,20 +86,19 @@ private class ModelSerializer<T>(
 
   override val defaultValue: Model<T> = Model(data = null)
 
-  override suspend fun writeTo(t: Model<T>, output: OutputStream) {
-    val sink = output.sink().buffer()
-    _jsonAdapter.toJson(sink, t)
-    sink.flush()
-  }
-
   override suspend fun readFrom(input: InputStream): Model<T> {
     return runCatching {
       val source = input.source().buffer()
       _jsonAdapter.fromJson(source) ?: defaultValue
     }.getOrElse { e ->
-      onError(DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e))
-      defaultValue
+      throw DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)
     }
+  }
+
+  override suspend fun writeTo(t: Model<T>, output: OutputStream) {
+    val sink = output.sink().buffer()
+    _jsonAdapter.toJson(sink, t)
+    sink.flush()
   }
 }
 
