@@ -22,6 +22,7 @@ interface DatastoreApi<T> {
   val flow: Flow<T?>
 
   /** 更新数据 */
+  @Throws(DatastoreWriteDataException::class)
   suspend fun update(transform: suspend (T?) -> T?)
 }
 
@@ -62,6 +63,7 @@ private class DatastoreApiImpl<T>(
     }
   }
 
+  @Throws(DatastoreWriteDataException::class)
   private suspend fun updateData(transform: suspend (Model<T>) -> Model<T>) {
     runCatching {
       _datastore.updateData { data ->
@@ -69,7 +71,7 @@ private class DatastoreApiImpl<T>(
       }
     }.onFailure { e ->
       if (e is androidx.datastore.core.IOException) {
-        onError(DatastoreWriteDataException(message = "Write data error ${clazz.name}", cause = e))
+        throw DatastoreWriteDataException(message = "Write data error ${clazz.name}", cause = e)
       } else {
         throw e
       }
