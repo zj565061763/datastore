@@ -60,7 +60,7 @@ private class DatastoreApiImpl<T>(
       .map { it.data }
       .catch { e ->
         when (e) {
-          is androidx.datastore.core.IOException -> throw DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)
+          is androidx.datastore.core.IOException -> throw DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e.cause ?: e)
           else -> throw e
         }
       }
@@ -111,9 +111,10 @@ private class ModelSerializer<T>(
         is java.io.EOFException,
           -> throw androidx.datastore.core.CorruptionException("Read data error")
         is kotlinx.coroutines.CancellationException,
-        is java.io.IOException,
+        is androidx.datastore.core.IOException,
+        is Error,
           -> throw e
-        else -> throw androidx.datastore.core.IOException().initCause(e)
+        else -> throw androidx.datastore.core.IOException(e)
       }
     }
   }
