@@ -7,6 +7,7 @@ import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import com.sd.lib.moshi.fMoshi
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -70,10 +71,14 @@ private class DatastoreApiImpl<T>(
         transform(data)
       }
     }.onFailure { e ->
-      if (e is androidx.datastore.core.IOException) {
-        throw DatastoreWriteDataException(message = "Write data error ${clazz.name}", cause = e)
-      } else {
-        throw e
+      when (e) {
+        is androidx.datastore.core.IOException,
+        is com.squareup.moshi.JsonDataException,
+          -> throw DatastoreWriteDataException(message = "Write data error ${clazz.name}", cause = e)
+        else -> {
+          // 其他异常不包装，直接抛出
+          throw e
+        }
       }
     }
   }
@@ -93,6 +98,7 @@ private class ModelSerializer<T>(
       val source = input.source().buffer()
       _jsonAdapter.fromJson(source) ?: defaultValue
     }.getOrElse { e ->
+      if (e is CancellationException) throw e
       throw DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)
     }
   }
