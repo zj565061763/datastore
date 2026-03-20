@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 interface DatastoreApiWithDefault<T> {
@@ -41,11 +42,19 @@ private class DatastoreApiWithDefaultImpl<T>(
 
   override val flow: Flow<T>
     get() = store.flow
-      .catch { e -> emit(null).also { onError(e) } }
+      .catch { e ->
+        if (e is kotlinx.coroutines.CancellationException) throw e
+        emit(null).also { onError(e) }
+      }
       .map { it ?: getDefault() }
       .distinctUntilChanged()
 
   override suspend fun update(transform: suspend (T) -> T?) {
+
+    flow { emit("") }
+      .catch { }
+      .collect { }
+
     store.update {
       val data = it ?: getDefault()
       transform(data)

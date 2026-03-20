@@ -25,8 +25,8 @@ interface DatastoreApi<T> {
   val flow: Flow<T?>
 
   /**
-   * 更新数据
-   * @throws DatastoreWriteDataException 当数据写入异常时
+   * 更新数据，当数据写入异常时抛出[DatastoreWriteDataException]，
+   * 如果是[transform]的异常则直接抛出
    */
   @Throws(DatastoreWriteDataException::class)
   suspend fun update(transform: suspend (T?) -> T?)
