@@ -28,10 +28,12 @@ interface DatastoreApi<T> {
    * 更新数据
    * @throws DatastoreWriteDataException 当数据写入异常时
    */
+  @Throws(DatastoreWriteDataException::class)
   suspend fun update(transform: suspend (T?) -> T?)
 }
 
-/** 获取数据 */
+/** [DatastoreApi.flow] */
+@Throws(DatastoreReadDataException::class)
 suspend fun <T> DatastoreApi<T>.get(): T? = flow.first()
 
 internal fun <T> DatastoreApi(

@@ -6,14 +6,22 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 interface DatastoreApiWithDefault<T> {
-  /** 数据流 */
+  /**
+   * 数据流，如果数据不存在则返回默认值
+   * @throws DatastoreReadDataException 当数据读取异常时
+   */
   val flow: Flow<T>
 
-  /** 更新数据 */
+  /**
+   * 更新数据，如果数据不存在则把默认值传递给[transform]
+   * @throws DatastoreWriteDataException 当数据写入异常时
+   */
+  @Throws(DatastoreWriteDataException::class)
   suspend fun update(transform: suspend (T) -> T?)
 }
 
-/** 获取数据 */
+/** [DatastoreApiWithDefault.flow] */
+@Throws(DatastoreReadDataException::class)
 suspend fun <T> DatastoreApiWithDefault<T>.get(): T = flow.first()
 
 fun <T> DatastoreApi<T>.withDefault(
@@ -32,7 +40,7 @@ private class DatastoreApiWithDefaultImpl<T>(
 
   override val flow: Flow<T>
     get() = store.flow
-      .map { it ?: newData(save = true) }
+      .map { it ?: getDefault() }
       .distinctUntilChanged()
 
   override suspend fun update(transform: suspend (T) -> T?) {
