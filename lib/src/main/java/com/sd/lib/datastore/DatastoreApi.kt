@@ -8,6 +8,7 @@ import com.sd.lib.moshi.fMoshi
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okio.buffer
@@ -55,7 +56,14 @@ private class DatastoreApiImpl<T>(
   )
 
   override val flow: Flow<T?>
-    get() = _datastore.data.map { it.data }
+    get() = _datastore.data
+      .map { it.data }
+      .catch { e ->
+        when (e) {
+          is androidx.datastore.core.IOException -> throw DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)
+          else -> throw e
+        }
+      }
 
   override suspend fun update(transform: suspend (T?) -> T?) {
     updateData { model ->
@@ -99,11 +107,10 @@ private class ModelSerializer<T>(
       _jsonAdapter.fromJson(source) ?: defaultValue
     }.getOrElse { e ->
       when (e) {
-        is kotlinx.coroutines.CancellationException -> throw e
         is com.squareup.moshi.JsonDataException,
         is java.io.EOFException,
           -> throw androidx.datastore.core.CorruptionException("Read data error")
-        else -> throw DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)
+        else -> throw e
       }
     }
   }
