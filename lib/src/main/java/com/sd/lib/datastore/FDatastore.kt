@@ -1,23 +1,19 @@
 package com.sd.lib.datastore
 
-import android.annotation.SuppressLint
 import android.content.Context
 import java.io.File
+import java.util.concurrent.atomic.AtomicReference
 
-@SuppressLint("StaticFieldLeak")
 object FDatastore {
-  @Volatile
-  private var _context: Context? = null
+  private val _context = AtomicReference<Context?>(null)
   private var _defaultGroup: DatastoreGroup? = null
 
   /**
-   * 默认在主进程自动初始化，其他进程需要手动初始化，初始化方法可以重复调用。
+   * 默认在主进程自动初始化，其他进程需要手动初始化。
    */
   @JvmStatic
   fun init(context: Context?) {
-    context?.applicationContext?.also { appContext ->
-      _context = appContext
-    }
+    _context.compareAndSet(null, context?.applicationContext)
   }
 
   /**
@@ -38,7 +34,7 @@ object FDatastore {
   }
 
   private fun getDirectory(): File {
-    val context = _context ?: error("FDatastore.init() should be called before this.")
+    val context = _context.get() ?: error("FDatastore.init() should be called before this.")
     return context.filesDir.resolve("sd.lib.datastore")
   }
 }
