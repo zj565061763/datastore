@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,7 +47,7 @@ private fun Content(
   LazyColumn(
     modifier = Modifier
       .fillMaxSize()
-      .statusBarsPadding(),
+      .safeContentPadding(),
     verticalArrangement = Arrangement.spacedBy(5.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
