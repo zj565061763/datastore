@@ -19,7 +19,6 @@ interface DatastoreApiWithDefault<T> {
 }
 
 /** [DatastoreApiWithDefault.flow] */
-@Throws(DatastoreReadDataException::class)
 suspend fun <T> DatastoreApiWithDefault<T>.get(): T = flow.first()
 
 fun <T> DatastoreApi<T>.withDefault(
