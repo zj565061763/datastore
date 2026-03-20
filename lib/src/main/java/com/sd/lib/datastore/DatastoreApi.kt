@@ -7,7 +7,6 @@ import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import com.sd.lib.moshi.fMoshi
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -66,21 +65,16 @@ private class DatastoreApiImpl<T>(
   private suspend fun updateData(transform: suspend (Model<T>) -> Model<T>) {
     runCatching {
       _datastore.updateData { data ->
-        try {
-          transform(data)
-        } catch (e: Throwable) {
-          if (e is CancellationException) throw e
-          throw TransformException(e)
-        }
+        transform(data)
       }
     }.onFailure { e ->
-      if (e is CancellationException) throw e
-      if (e is TransformException) throw e.cause
-      onError(DatastoreWriteDataException(message = "Write data error ${clazz.name}", cause = e))
+      if (e is androidx.datastore.core.IOException) {
+        onError(DatastoreWriteDataException(message = "Write data error ${clazz.name}", cause = e))
+      } else {
+        throw e
+      }
     }
   }
-
-  private class TransformException(override val cause: Throwable) : Throwable()
 }
 
 private class ModelSerializer<T>(
