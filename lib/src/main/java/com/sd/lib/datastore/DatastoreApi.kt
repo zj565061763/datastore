@@ -7,7 +7,6 @@ import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import com.sd.lib.moshi.fMoshi
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -98,8 +97,13 @@ private class ModelSerializer<T>(
       val source = input.source().buffer()
       _jsonAdapter.fromJson(source) ?: defaultValue
     }.getOrElse { e ->
-      if (e is CancellationException) throw e
-      throw DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)
+      when (e) {
+        is kotlinx.coroutines.CancellationException -> throw e
+        is com.squareup.moshi.JsonDataException,
+        is java.io.EOFException,
+          -> throw androidx.datastore.core.CorruptionException("Read data error")
+        else -> throw DatastoreReadDataException(message = "Read data error ${clazz.name}", cause = e)
+      }
     }
   }
 
