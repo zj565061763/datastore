@@ -64,6 +64,7 @@ private class DatastoreApiImpl<T>(
     }
   }
 
+  @Throws(DatastoreWriteDataException::class)
   private suspend fun updateData(transform: suspend (Model<T>) -> Model<T>) {
     runCatching {
       _datastore.updateData { data ->
