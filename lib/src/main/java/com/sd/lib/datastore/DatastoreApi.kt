@@ -27,7 +27,7 @@ interface DatastoreApi<T> {
 
   /**
    * 更新数据，当数据写入异常时抛出[DatastoreWriteDataException]，
-   * 如果是[transform]的异常则直接抛出
+   * [transform]的异常则直接抛出
    */
   @Throws(DatastoreWriteDataException::class)
   suspend fun update(transform: suspend (T?) -> T?)
@@ -110,7 +110,8 @@ private class ModelSerializer<T>(
         is com.squareup.moshi.JsonDataException,
         is java.io.EOFException,
           -> throw androidx.datastore.core.CorruptionException("Read data error")
-        else -> throw e
+        is java.io.IOException -> throw e
+        else -> throw androidx.datastore.core.IOException().initCause(e)
       }
     }
   }

@@ -11,8 +11,9 @@ interface DatastoreApiWithDefault<T> {
   val flow: Flow<T>
 
   /**
-   * 更新数据，如果数据不存在则把默认值传递给[transform]
-   * @throws DatastoreWriteDataException 当数据写入异常时
+   * 更新数据，如果数据不存在则把默认值传递给[transform]，
+   * 当数据写入异常时抛出[DatastoreWriteDataException]，
+   * [transform]的异常直接抛出。
    */
   @Throws(DatastoreWriteDataException::class)
   suspend fun update(transform: suspend (T) -> T?)
