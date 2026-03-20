@@ -110,7 +110,9 @@ private class ModelSerializer<T>(
         is com.squareup.moshi.JsonDataException,
         is java.io.EOFException,
           -> throw androidx.datastore.core.CorruptionException("Read data error")
-        is java.io.IOException -> throw e
+        is kotlinx.coroutines.CancellationException,
+        is java.io.IOException,
+          -> throw e
         else -> throw androidx.datastore.core.IOException().initCause(e)
       }
     }
